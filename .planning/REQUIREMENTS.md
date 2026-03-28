@@ -7,9 +7,9 @@
 
 ### Search
 
-- [ ] **SRCH-01**: Usuário busca negócios no Google Places via `--city` e `--category` no CLI
+- [x] **SRCH-01**: Usuário busca negócios no Google Places via `--city` e `--category` no CLI
 - [ ] **SRCH-02**: Bot filtra negócios sem site real (campo ausente ou URL do Instagram)
-- [ ] **SRCH-03**: Bot extrai nome, rating, telefone e e-mail de cada resultado
+- [x] **SRCH-03**: Bot extrai nome, rating, telefone e e-mail de cada resultado
 
 ### Template
 
@@ -70,20 +70,20 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SRCH-01 | Phase 1 | Pending |
-| SRCH-02 | Phase 1 | Pending |
-| SRCH-03 | Phase 1 | Pending |
-| TMPL-01 | Phase 2 | Pending |
-| WA-01 | Phase 3 | Pending |
-| WA-02 | Phase 3 | Pending |
+| SRCH-01 | Phase 1 | Complete |
+| SRCH-03 | Phase 1 | Complete |
+| SRCH-02 | Phase 2 | Pending |
 | WA-03 | Phase 2 | Pending |
-| EMAIL-01 | Phase 4 | Pending |
-| EMAIL-02 | Phase 4 | Pending |
-| HIST-01 | Phase 2 | Pending |
-| HIST-02 | Phase 2 | Pending |
-| HIST-03 | Phase 2 | Pending |
-| OPS-01 | Phase 5 | Pending |
-| OPS-02 | Phase 5 | Pending |
+| HIST-01 | Phase 3 | Pending |
+| HIST-02 | Phase 3 | Pending |
+| HIST-03 | Phase 3 | Pending |
+| TMPL-01 | Phase 4 | Pending |
+| WA-01 | Phase 5 | Pending |
+| WA-02 | Phase 5 | Pending |
+| EMAIL-01 | Phase 6 | Pending |
+| EMAIL-02 | Phase 6 | Pending |
+| OPS-01 | Phase 7 | Pending |
+| OPS-02 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 14 total
@@ -92,4 +92,4 @@
 
 ---
 *Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after initial definition*
+*Last updated: 2026-03-28 after roadmap creation — traceability updated to 7-phase structure*

@@ -38,7 +38,7 @@
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold ESM project + Wave 0 test stubs (RED)
+- [x] 01-01-PLAN.md — Scaffold ESM project + Wave 0 test stubs (RED)
 - [ ] 01-02-PLAN.md — Implement all source modules (GREEN — tests pass)
 
 ---
@@ -157,7 +157,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Google Places Search | 0/2 | Planned | - |
+| 1. Foundation + Google Places Search | 1/2 | In Progress | - |
 | 2. Business Filter + Phone Normalization | 0/? | Not started | - |
 | 3. Contact History + Deduplication | 0/? | Not started | - |
 | 4. Message Template Rendering | 0/? | Not started | - |
