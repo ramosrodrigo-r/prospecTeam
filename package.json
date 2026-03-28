@@ -1,0 +1,13 @@
+{
+  "name": "prospecteam",
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=21" },
+  "scripts": {
+    "start": "node bin/prospect.js",
+    "test": "node --test tests/unit/*.test.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1"
+  }
+}
