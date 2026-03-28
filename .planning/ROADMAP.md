@@ -58,7 +58,11 @@ Plans:
   4. The phone normalization function converts at minimum 10 Brazilian number format variants (including `+55 (11) 98765-4321`, `(11) 98765-4321`, `11987654321`, `5511987654321`) to the `5511XXXXXXXXX` format required by Evolution API
   5. Numbers that fail normalization are logged with the raw value and skipped — they do not crash the pipeline
 
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — TDD: filter + phone tests (RED) then implementation (GREEN)
+- [ ] 02-02-PLAN.md — Wire filterBusinesses into fetch.js pipeline
 
 ---
 
@@ -158,7 +162,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Google Places Search | 2/2 | Complete   | 2026-03-28 |
-| 2. Business Filter + Phone Normalization | 0/? | Not started | - |
+| 2. Business Filter + Phone Normalization | 0/2 | Planned | - |
 | 3. Contact History + Deduplication | 0/? | Not started | - |
 | 4. Message Template Rendering | 0/? | Not started | - |
 | 5. WhatsApp Send via Evolution API | 0/? | Not started | - |
@@ -212,4 +216,4 @@ These are not phases — they are constraints the implementation must satisfy. T
 ---
 
 *Roadmap created: 2026-03-28*
-*Last updated: 2026-03-28 after Phase 1 planning*
+*Last updated: 2026-03-28 after Phase 2 planning*
