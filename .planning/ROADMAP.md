@@ -8,7 +8,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Project Foundation + Google Places Search** - ESM project scaffold with billing guards, working Places search returning structured prospect data
+- [x] **Phase 1: Project Foundation + Google Places Search** - ESM project scaffold with billing guards, working Places search returning structured prospect data (completed 2026-03-28)
 - [ ] **Phase 2: Business Filter + Phone Normalization** - Core value filter (no website / Instagram-only) and Brazilian phone normalization verified before any send infrastructure is built
 - [ ] **Phase 3: Contact History + Deduplication** - Local JSON history keyed by `place_id` that prevents duplicate sends across runs
 - [ ] **Phase 4: Message Template Rendering** - Fixed outreach template with variable substitution producing send-ready messages
@@ -35,11 +35,11 @@
   4. Requests to the Places API use a `FieldMask` restricted to `id,displayName,websiteUri,nationalPhoneNumber,rating` — confirmed by inspecting outgoing request headers in debug mode
   5. Searching a large category (e.g., `restaurante` in a major city) returns more than 20 results by paginating through `nextPageToken` with a 2.5-second delay between pages
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 01-01-PLAN.md — Scaffold ESM project + Wave 0 test stubs (RED)
-- [ ] 01-02-PLAN.md — Implement all source modules (GREEN — tests pass)
+- [x] 01-02-PLAN.md — Implement all source modules (GREEN — tests pass)
 
 ---
 
@@ -157,7 +157,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Google Places Search | 1/2 | In Progress | - |
+| 1. Foundation + Google Places Search | 2/2 | Complete   | 2026-03-28 |
 | 2. Business Filter + Phone Normalization | 0/? | Not started | - |
 | 3. Contact History + Deduplication | 0/? | Not started | - |
 | 4. Message Template Rendering | 0/? | Not started | - |
