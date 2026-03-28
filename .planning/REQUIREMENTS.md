@@ -8,7 +8,7 @@
 ### Search
 
 - [x] **SRCH-01**: Usuário busca negócios no Google Places via `--city` e `--category` no CLI
-- [ ] **SRCH-02**: Bot filtra negócios sem site real (campo ausente ou URL do Instagram)
+- [x] **SRCH-02**: Bot filtra negócios sem site real (campo ausente ou URL do Instagram)
 - [x] **SRCH-03**: Bot extrai nome, rating, telefone e e-mail de cada resultado
 
 ### Template
@@ -19,7 +19,7 @@
 
 - [ ] **WA-01**: Bot envia mensagem via Evolution API para o número WhatsApp do negócio
 - [ ] **WA-02**: Bot aplica delay aleatório de 3-8 segundos entre envios WhatsApp
-- [ ] **WA-03**: Bot normaliza números brasileiros para formato E.164 antes de enviar
+- [x] **WA-03**: Bot normaliza números brasileiros para formato E.164 antes de enviar
 
 ### Email
 
@@ -72,8 +72,8 @@
 |-------------|-------|--------|
 | SRCH-01 | Phase 1 | Complete |
 | SRCH-03 | Phase 1 | Complete |
-| SRCH-02 | Phase 2 | Pending |
-| WA-03 | Phase 2 | Pending |
+| SRCH-02 | Phase 2 | Complete |
+| WA-03 | Phase 2 | Complete |
 | HIST-01 | Phase 3 | Pending |
 | HIST-02 | Phase 3 | Pending |
 | HIST-03 | Phase 3 | Pending |

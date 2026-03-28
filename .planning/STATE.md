@@ -2,15 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
 status: unknown
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-03-28T19:13:22.869Z"
+last_updated: "2026-03-28T23:54:08.952Z"
 progress:
   total_phases: 7
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 4
+  completed_plans: 3
 ---
 
 # Project State: ProspecTeam Bot
@@ -20,7 +18,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não tem razão de existir.
-**Current focus:** Phase 01 — foundation-places
+**Current focus:** Phase 02 — business-filter-phone-normalization
 
 ## Milestone
 
@@ -28,10 +26,8 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 ## Current Position
 
-**Phase:** 2
-**Current Plan:** Not started
-**Last session:** 2026-03-28T19:11:12.448Z
-**Stopped at:** Completed 01-02-PLAN.md
+Phase: 02 (business-filter-phone-normalization) — EXECUTING
+Plan: 2 of 2
 
 ## Phase Status
 
@@ -53,6 +49,8 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 - [Phase 01-foundation-places]: parseArgs uses non-consuming iteration to allow flags consumed as values to still be matched as flags
 - [Phase 01-foundation-places]: dotenv/config must be first ESM import in CLI entry point to load .env before module initialization
 - [Phase 01-foundation-places]: nextPageToken is top-level in Places API v1 FieldMask (not places.nextPageToken) — required for pagination
+- [Phase 02-business-filter-phone-normalization]: filterBusinesses uses hostname-based blocked-domain matching (instagram.com, linktr.ee) with protocol-prefixing and try/catch for parse failures
+- [Phase 02-business-filter-phone-normalization]: normalizePhone uses digit-length branching (10/11 digits prepend 55, 12/13 digits with 55 prefix pass through, other returns null with console.warn)
 
 ## Performance Metrics
 
@@ -60,6 +58,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 |-------|------|----------|-------|-------|
 | 01-foundation-places | 01 | 2min | 2 | 9 |
 | Phase 01-foundation-places P02 | 2min | 3 tasks | 5 files |
+| Phase 02-business-filter-phone-normalization P01 | 1min | 2 tasks | 4 files |
 
 ## Next Action
 
