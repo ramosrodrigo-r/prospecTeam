@@ -62,7 +62,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — TDD: filter + phone tests (RED) then implementation (GREEN)
-- [ ] 02-02-PLAN.md — Wire filterBusinesses into fetch.js pipeline
+- [x] 02-02-PLAN.md — Wire filterBusinesses into fetch.js pipeline
 
 ---
 

@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-28T23:54:08.952Z"
+last_updated: "2026-03-28T23:56:22.485Z"
 progress:
   total_phases: 7
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # Project State: ProspecTeam Bot
@@ -51,6 +51,7 @@ Plan: 2 of 2
 - [Phase 01-foundation-places]: nextPageToken is top-level in Places API v1 FieldMask (not places.nextPageToken) — required for pagination
 - [Phase 02-business-filter-phone-normalization]: filterBusinesses uses hostname-based blocked-domain matching (instagram.com, linktr.ee) with protocol-prefixing and try/catch for parse failures
 - [Phase 02-business-filter-phone-normalization]: normalizePhone uses digit-length branching (10/11 digits prepend 55, 12/13 digits with 55 prefix pass through, other returns null with console.warn)
+- [Phase 02-business-filter-phone-normalization]: filterBusinesses called at end of fetchProspects before return, keeping filter concern inside the pipeline stage (D-08)
 
 ## Performance Metrics
 
@@ -59,6 +60,7 @@ Plan: 2 of 2
 | 01-foundation-places | 01 | 2min | 2 | 9 |
 | Phase 01-foundation-places P02 | 2min | 3 tasks | 5 files |
 | Phase 02-business-filter-phone-normalization P01 | 1min | 2 tasks | 4 files |
+| Phase 02-business-filter-phone-normalization P02 | 3min | 1 tasks | 2 files |
 
 ## Next Action
 
