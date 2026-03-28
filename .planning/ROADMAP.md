@@ -35,7 +35,11 @@
   4. Requests to the Places API use a `FieldMask` restricted to `id,displayName,websiteUri,nationalPhoneNumber,rating` — confirmed by inspecting outgoing request headers in debug mode
   5. Searching a large category (e.g., `restaurante` in a major city) returns more than 20 results by paginating through `nextPageToken` with a 2.5-second delay between pages
 
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Scaffold ESM project + Wave 0 test stubs (RED)
+- [ ] 01-02-PLAN.md — Implement all source modules (GREEN — tests pass)
 
 ---
 
@@ -153,7 +157,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation + Google Places Search | 0/? | Not started | - |
+| 1. Foundation + Google Places Search | 0/2 | Planned | - |
 | 2. Business Filter + Phone Normalization | 0/? | Not started | - |
 | 3. Contact History + Deduplication | 0/? | Not started | - |
 | 4. Message Template Rendering | 0/? | Not started | - |
@@ -208,4 +212,4 @@ These are not phases — they are constraints the implementation must satisfy. T
 ---
 
 *Roadmap created: 2026-03-28*
-*Last updated: 2026-03-28 after initial creation*
+*Last updated: 2026-03-28 after Phase 1 planning*
