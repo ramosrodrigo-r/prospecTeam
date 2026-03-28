@@ -21,7 +21,7 @@ describe('fetchProspects', () => {
           displayName: { text: 'Padaria', languageCode: 'pt' },
           rating: 4.5,
           nationalPhoneNumber: '(11) 98765-4321',
-          websiteUri: 'https://padaria.com'
+          websiteUri: null
         }
       ]
     }
@@ -38,7 +38,7 @@ describe('fetchProspects', () => {
         name: 'Padaria',
         rating: 4.5,
         phone: '(11) 98765-4321',
-        website: 'https://padaria.com',
+        website: null,
         email: null
       }
     ])
@@ -65,7 +65,7 @@ describe('fetchProspects', () => {
           displayName: { text: 'Padaria B', languageCode: 'pt' },
           rating: 4.2,
           nationalPhoneNumber: '(21) 91234-5678',
-          websiteUri: 'https://padariaB.com'
+          websiteUri: 'https://www.instagram.com/padariaB'
         }
       ]
     }

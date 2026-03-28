@@ -1,4 +1,5 @@
 import { searchPlaces } from '../services/places.js'
+import { filterBusinesses } from '../utils/filter.js'
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -26,5 +27,5 @@ export async function fetchProspects({ city, category, apiKey }) {
     pageToken = data.nextPageToken ?? null
   } while (pageToken)
 
-  return results
+  return filterBusinesses(results)
 }
