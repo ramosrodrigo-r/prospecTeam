@@ -58,7 +58,7 @@ Plans:
   4. The phone normalization function converts at minimum 10 Brazilian number format variants (including `+55 (11) 98765-4321`, `(11) 98765-4321`, `11987654321`, `5511987654321`) to the `5511XXXXXXXXX` format required by Evolution API
   5. Numbers that fail normalization are logged with the raw value and skipped — they do not crash the pipeline
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 02-01-PLAN.md — TDD: filter + phone tests (RED) then implementation (GREEN)
@@ -80,7 +80,11 @@ Plans:
   3. Interrupting a run with Ctrl+C after some sends does not corrupt or empty `data/history.json` — the file contains exactly the entries that were successfully recorded before the interrupt
   4. History is loaded once into an in-memory Set at startup, not re-read on every send
 
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — TDD history.js: testes RED + implementacao GREEN (loadHistory, isDuplicate, recordSend)
+- [ ] 03-02-PLAN.md — TDD dedup.js: stage de deduplicacao + .gitignore
 
 ---
 
@@ -162,8 +166,8 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Google Places Search | 2/2 | Complete   | 2026-03-28 |
-| 2. Business Filter + Phone Normalization | 1/2 | In Progress|  |
-| 3. Contact History + Deduplication | 0/? | Not started | - |
+| 2. Business Filter + Phone Normalization | 2/2 | Complete   | 2026-03-28 |
+| 3. Contact History + Deduplication | 0/2 | Planned | - |
 | 4. Message Template Rendering | 0/? | Not started | - |
 | 5. WhatsApp Send via Evolution API | 0/? | Not started | - |
 | 6. Email Send via Zoho SMTP | 0/? | Not started | - |
@@ -216,4 +220,4 @@ These are not phases — they are constraints the implementation must satisfy. T
 ---
 
 *Roadmap created: 2026-03-28*
-*Last updated: 2026-03-28 after Phase 2 planning*
+*Last updated: 2026-03-29 after Phase 3 planning*
