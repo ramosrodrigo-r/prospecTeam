@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-30T14:25:34.972Z"
+last_updated: "2026-03-30T14:28:44.013Z"
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
 ---
 
 # Project State: ProspecTeam Bot
@@ -54,6 +54,9 @@ Plan: 2 of 2
 - [Phase 02-business-filter-phone-normalization]: filterBusinesses called at end of fetchProspects before return, keeping filter concern inside the pipeline stage (D-08)
 - [Phase 03-contact-history-deduplication]: history.json usa formato { placeId: { sentAt: ISO8601 } } via Object.fromEntries(Map)
 - [Phase 03-contact-history-deduplication]: Write-then-rename atomico em history.js: writeFileSync para .tmp, renameSync para .json final — previne corrupcao em crash
+- [Phase 03-contact-history-deduplication]: D-11: dedup implemented as separate pipeline stage (stages/dedup.js), not inside fetch.js
+- [Phase 03-contact-history-deduplication]: D-12: dedupProspects receives array of prospects, calls isDuplicate per item, returns filtered array
+- [Phase 03-contact-history-deduplication]: D-13: dedupProspects does NOT call recordSend — recordSend invoked only by senders in phases 5-6
 
 ## Performance Metrics
 
@@ -64,6 +67,7 @@ Plan: 2 of 2
 | Phase 02-business-filter-phone-normalization P01 | 1min | 2 tasks | 4 files |
 | Phase 02-business-filter-phone-normalization P02 | 3min | 1 tasks | 2 files |
 | Phase 03-contact-history-deduplication P01 | 5min | 2 tasks | 2 files |
+| Phase 03-contact-history-deduplication P02 | 1min | 2 tasks | 3 files |
 
 ## Next Action
 

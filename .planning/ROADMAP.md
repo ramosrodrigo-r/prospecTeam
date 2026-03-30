@@ -84,7 +84,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — TDD history.js: testes RED + implementacao GREEN (loadHistory, isDuplicate, recordSend)
-- [ ] 03-02-PLAN.md — TDD dedup.js: stage de deduplicacao + .gitignore
+- [x] 03-02-PLAN.md — TDD dedup.js: stage de deduplicacao + .gitignore
 
 ---
 
