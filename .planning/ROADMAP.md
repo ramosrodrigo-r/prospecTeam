@@ -101,7 +101,11 @@ Plans:
   2. A prospect missing the `rating` field (null or undefined) renders without crashing — the placeholder resolves to a sensible fallback (e.g., empty string or "N/A")
   3. The template file lives at `templates/outreach.txt` and can be edited by a non-developer without touching any JavaScript
 
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — TDD RED: test stubs para renderTemplate + arquivo de template outreach.txt
+- [ ] 04-02-PLAN.md — TDD GREEN: implementar renderTemplate + renderMessage pipeline stage
 
 ---
 
@@ -168,7 +172,7 @@ Plans:
 | 1. Foundation + Google Places Search | 2/2 | Complete   | 2026-03-28 |
 | 2. Business Filter + Phone Normalization | 2/2 | Complete   | 2026-03-28 |
 | 3. Contact History + Deduplication | 1/2 | In Progress|  |
-| 4. Message Template Rendering | 0/? | Not started | - |
+| 4. Message Template Rendering | 0/2 | Planned | - |
 | 5. WhatsApp Send via Evolution API | 0/? | Not started | - |
 | 6. Email Send via Zoho SMTP | 0/? | Not started | - |
 | 7. CLI Wiring + Operator UX | 0/? | Not started | - |
@@ -220,4 +224,4 @@ These are not phases — they are constraints the implementation must satisfy. T
 ---
 
 *Roadmap created: 2026-03-28*
-*Last updated: 2026-03-29 after Phase 3 planning*
+*Last updated: 2026-03-30 after Phase 4 planning*
