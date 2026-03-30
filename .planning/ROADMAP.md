@@ -124,7 +124,11 @@ Plans:
   4. The time between consecutive WhatsApp sends is random within the 3–8 second range — confirmed by observing timestamps in terminal output
   5. Running the bot when the Evolution API instance is disconnected prints a clear error and exits before attempting any send — does not silently fail or send to a null endpoint
 
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — TDD: testes RED + implementacao GREEN para evolution.js, sender.js, env.js expandido
+- [ ] 05-02-PLAN.md — Wire pipeline completo em bin/prospect.js + verificacao humana
 
 ---
 
@@ -173,7 +177,7 @@ Plans:
 | 2. Business Filter + Phone Normalization | 2/2 | Complete   | 2026-03-28 |
 | 3. Contact History + Deduplication | 1/2 | In Progress|  |
 | 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
-| 5. WhatsApp Send via Evolution API | 0/? | Not started | - |
+| 5. WhatsApp Send via Evolution API | 0/2 | Not started | - |
 | 6. Email Send via Zoho SMTP | 0/? | Not started | - |
 | 7. CLI Wiring + Operator UX | 0/? | Not started | - |
 
@@ -217,11 +221,11 @@ These are not phases — they are constraints the implementation must satisfy. T
 | Deduplication history exists before any live send | `src/history.js` | Phase 3 |
 | History written per-send, not at batch end | `src/history.js` | Phase 3 |
 | WhatsApp send delay is random 3–8s (never fixed interval) | `stages/sender.js` | Phase 5 |
-| No bulk `/chat/whatsappNumbers` validation calls | `services/whatsapp.js` | Phase 5 |
-| Evolution API instance health check at startup | `services/whatsapp.js` | Phase 5 |
+| No bulk `/chat/whatsappNumbers` validation calls | `services/evolution.js` | Phase 5 |
+| Evolution API instance health check at startup | `services/evolution.js` | Phase 5 |
 | SPF/DKIM verified before first live email send | Operational pre-flight | Phase 6 |
 
 ---
 
 *Roadmap created: 2026-03-28*
-*Last updated: 2026-03-30 after Phase 4 planning*
+*Last updated: 2026-03-30 after Phase 5 planning*
