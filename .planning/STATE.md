@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-30T17:45:50.973Z"
+last_updated: "2026-03-30T17:49:27.394Z"
 progress:
   total_phases: 7
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State: ProspecTeam Bot
@@ -65,6 +65,8 @@ Plan: 2 of 2
 - [Phase 05-whatsapp-send-via-evolution-api]: sender.js accepts optional _deps={}  4th parameter for dependency injection — mock.module not available in node:test v24 without experimental flags
 - [Phase 05-whatsapp-send-via-evolution-api]: validateEnv returns object { apiKey, evolutionApiUrl, evolutionApiKey, evolutionInstance } — breaking change from string return, bin/prospect.js update deferred to Plan 02
 - [Phase 05-whatsapp-send-via-evolution-api]: Evolution API uses apikey header (not Authorization Bearer) — applies to all future Evolution API calls
+- [Phase 05-whatsapp-send-via-evolution-api]: Pipeline order enforced: validateEnv -> healthCheck -> fetchProspects -> loadHistory -> dedupProspects -> render+send loop
+- [Phase 05-whatsapp-send-via-evolution-api]: Health check exits 1 on disconnected Evolution API instance before fetching any prospects
 
 ## Performance Metrics
 
@@ -79,6 +81,7 @@ Plan: 2 of 2
 | Phase 04-message-template-rendering P01 | 1min | 2 tasks | 2 files |
 | Phase 04-message-template-rendering P02 | 1min | 2 tasks | 2 files |
 | Phase 05-whatsapp-send-via-evolution-api P01 | 15min | 2 tasks | 7 files |
+| Phase 05-whatsapp-send-via-evolution-api P02 | 2 | 1 tasks | 1 files |
 
 ## Next Action
 
