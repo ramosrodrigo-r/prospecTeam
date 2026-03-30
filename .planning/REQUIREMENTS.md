@@ -13,7 +13,7 @@
 
 ### Template
 
-- [ ] **TMPL-01**: Bot substitui variáveis (`{{nome}}`, `{{rating}}`, `{{categoria}}`, `{{cidade}}`) no template de mensagem fixo
+- [x] **TMPL-01**: Bot substitui variáveis (`{{nome}}`, `{{rating}}`, `{{categoria}}`, `{{cidade}}`) no template de mensagem fixo
 
 ### WhatsApp
 
@@ -77,7 +77,7 @@
 | HIST-01 | Phase 3 | Complete |
 | HIST-02 | Phase 3 | Complete |
 | HIST-03 | Phase 3 | Complete |
-| TMPL-01 | Phase 4 | Pending |
+| TMPL-01 | Phase 4 | Complete |
 | WA-01 | Phase 5 | Pending |
 | WA-02 | Phase 5 | Pending |
 | EMAIL-01 | Phase 6 | Pending |

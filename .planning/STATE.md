@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-30T14:31:15.122Z"
+last_updated: "2026-03-30T14:54:11.956Z"
 progress:
   total_phases: 7
   completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 8
+  completed_plans: 7
 ---
 
 # Project State: ProspecTeam Bot
@@ -18,7 +18,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não tem razão de existir.
-**Current focus:** Phase 03 — contact-history-deduplication
+**Current focus:** Phase 04 — message-template-rendering
 
 ## Milestone
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
+Phase: 04 (message-template-rendering) — EXECUTING
+Plan: 2 of 2
 
 ## Phase Status
 
@@ -57,6 +57,8 @@ Plan: Not started
 - [Phase 03-contact-history-deduplication]: D-11: dedup implemented as separate pipeline stage (stages/dedup.js), not inside fetch.js
 - [Phase 03-contact-history-deduplication]: D-12: dedupProspects receives array of prospects, calls isDuplicate per item, returns filtered array
 - [Phase 03-contact-history-deduplication]: D-13: dedupProspects does NOT call recordSend — recordSend invoked only by senders in phases 5-6
+- [Phase 04-message-template-rendering]: Plain ASCII in outreach.txt (no accents) to avoid encoding issues in WhatsApp/email delivery
+- [Phase 04-message-template-rendering]: {{nome}} appears twice in template to verify multiple-occurrence substitution behavior
 
 ## Performance Metrics
 
@@ -68,6 +70,7 @@ Plan: Not started
 | Phase 02-business-filter-phone-normalization P02 | 3min | 1 tasks | 2 files |
 | Phase 03-contact-history-deduplication P01 | 5min | 2 tasks | 2 files |
 | Phase 03-contact-history-deduplication P02 | 1min | 2 tasks | 3 files |
+| Phase 04-message-template-rendering P01 | 1min | 2 tasks | 2 files |
 
 ## Next Action
 
