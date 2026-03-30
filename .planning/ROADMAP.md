@@ -11,7 +11,7 @@
 - [x] **Phase 1: Project Foundation + Google Places Search** - ESM project scaffold with billing guards, working Places search returning structured prospect data (completed 2026-03-28)
 - [ ] **Phase 2: Business Filter + Phone Normalization** - Core value filter (no website / Instagram-only) and Brazilian phone normalization verified before any send infrastructure is built
 - [ ] **Phase 3: Contact History + Deduplication** - Local JSON history keyed by `place_id` that prevents duplicate sends across runs
-- [ ] **Phase 4: Message Template Rendering** - Fixed outreach template with variable substitution producing send-ready messages
+- [x] **Phase 4: Message Template Rendering** - Fixed outreach template with variable substitution producing send-ready messages (completed 2026-03-30)
 - [ ] **Phase 5: WhatsApp Send via Evolution API** - Primary channel sender with mandatory random delays and per-session caps to protect account health
 - [ ] **Phase 6: Email Send via Zoho SMTP** - Secondary channel sender with graceful skip when email is absent
 - [ ] **Phase 7: CLI Wiring + Operator UX** - Full pipeline orchestration with Commander.js entry point and chalk-formatted terminal output
@@ -101,11 +101,11 @@ Plans:
   2. A prospect missing the `rating` field (null or undefined) renders without crashing — the placeholder resolves to a sensible fallback (e.g., empty string or "N/A")
   3. The template file lives at `templates/outreach.txt` and can be edited by a non-developer without touching any JavaScript
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 04-01-PLAN.md — TDD RED: test stubs para renderTemplate + arquivo de template outreach.txt
-- [ ] 04-02-PLAN.md — TDD GREEN: implementar renderTemplate + renderMessage pipeline stage
+- [x] 04-02-PLAN.md — TDD GREEN: implementar renderTemplate + renderMessage pipeline stage
 
 ---
 
@@ -172,7 +172,7 @@ Plans:
 | 1. Foundation + Google Places Search | 2/2 | Complete   | 2026-03-28 |
 | 2. Business Filter + Phone Normalization | 2/2 | Complete   | 2026-03-28 |
 | 3. Contact History + Deduplication | 1/2 | In Progress|  |
-| 4. Message Template Rendering | 1/2 | In Progress|  |
+| 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
 | 5. WhatsApp Send via Evolution API | 0/? | Not started | - |
 | 6. Email Send via Zoho SMTP | 0/? | Not started | - |
 | 7. CLI Wiring + Operator UX | 0/? | Not started | - |

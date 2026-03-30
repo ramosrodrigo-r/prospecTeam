@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-30T14:54:11.956Z"
+last_updated: "2026-03-30T14:57:21.391Z"
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State: ProspecTeam Bot
@@ -59,6 +59,9 @@ Plan: 2 of 2
 - [Phase 03-contact-history-deduplication]: D-13: dedupProspects does NOT call recordSend — recordSend invoked only by senders in phases 5-6
 - [Phase 04-message-template-rendering]: Plain ASCII in outreach.txt (no accents) to avoid encoding issues in WhatsApp/email delivery
 - [Phase 04-message-template-rendering]: {{nome}} appears twice in template to verify multiple-occurrence substitution behavior
+- [Phase 04-message-template-rendering]: renderTemplate is a pure function with no imports — takes template string and vars object, returns rendered string
+- [Phase 04-message-template-rendering]: renderMessage separates prospect fields from CLI context (cidade/categoria) — prospect is immutable, context is separate param
+- [Phase 04-message-template-rendering]: TEMPLATE_PATH resolved at module load time using import.meta.url to ensure correct path regardless of process cwd
 
 ## Performance Metrics
 
@@ -71,6 +74,7 @@ Plan: 2 of 2
 | Phase 03-contact-history-deduplication P01 | 5min | 2 tasks | 2 files |
 | Phase 03-contact-history-deduplication P02 | 1min | 2 tasks | 3 files |
 | Phase 04-message-template-rendering P01 | 1min | 2 tasks | 2 files |
+| Phase 04-message-template-rendering P02 | 1min | 2 tasks | 2 files |
 
 ## Next Action
 
