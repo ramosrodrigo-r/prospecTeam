@@ -1,99 +1,72 @@
-import { describe, it, beforeEach, afterEach, mock } from 'node:test'
+import { describe, it, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
-
-// Mock history module before importing sender to intercept recordSend
-let recordSendCalls = []
-await mock.module('../../src/history.js', {
-  namedExports: {
-    recordSend: (placeId) => { recordSendCalls.push(placeId) },
-    loadHistory: () => {},
-    isDuplicate: () => false
-  }
-})
-
-// Import sendWhatsApp after mock is registered
-const { sendWhatsApp } = await import('../../src/stages/sender.js')
+import { sendWhatsApp } from '../../src/stages/sender.js'
 
 const prospect = { placeId: 'place123', name: 'Test Biz', phone: '5511999998888' }
 const message = 'Ola, Test Biz!'
 const config = { baseUrl: 'http://localhost:8080', apiKey: 'test-key', instance: 'test-instance' }
 
 describe('sendWhatsApp', () => {
-  let originalFetch
   let originalSetTimeout
+  let recordSendCalls
+  let mockSendTextMessage
+  let mockRecordSend
+  let deps
 
   beforeEach(() => {
-    originalFetch = globalThis.fetch
     originalSetTimeout = globalThis.setTimeout
     recordSendCalls = []
 
-    // Default mock: setTimeout that resolves immediately
+    // Default: sendTextMessage resolves successfully
+    mockSendTextMessage = async () => ({ messageId: 'msg1' })
+    mockRecordSend = (placeId) => { recordSendCalls.push(placeId) }
+
+    // Default mock: setTimeout resolves immediately
     globalThis.setTimeout = (fn, delay) => {
       fn()
       return 1
     }
+
+    deps = { sendTextMessage: mockSendTextMessage, recordSend: mockRecordSend }
   })
 
   afterEach(() => {
-    globalThis.fetch = originalFetch
     globalThis.setTimeout = originalSetTimeout
   })
 
   it('retorna { ok: true } quando sendTextMessage resolve', async () => {
-    globalThis.fetch = async () => ({
-      ok: true,
-      json: async () => ({ messageId: 'msg1' }),
-      text: async () => ''
-    })
-    const result = await sendWhatsApp(prospect, message, config)
+    const result = await sendWhatsApp(prospect, message, config, deps)
     assert.deepStrictEqual(result, { ok: true })
   })
 
   it('chama recordSend(prospect.placeId) quando sendTextMessage resolve', async () => {
-    globalThis.fetch = async () => ({
-      ok: true,
-      json: async () => ({}),
-      text: async () => ''
-    })
-    await sendWhatsApp(prospect, message, config)
+    await sendWhatsApp(prospect, message, config, deps)
     assert.equal(recordSendCalls.length, 1)
     assert.equal(recordSendCalls[0], prospect.placeId)
   })
 
   it('retorna { ok: false, reason } quando sendTextMessage rejeita', async () => {
-    globalThis.fetch = async () => ({
-      ok: false,
-      status: 500,
-      text: async () => 'Internal Server Error'
-    })
-    const result = await sendWhatsApp(prospect, message, config)
+    deps.sendTextMessage = async () => { throw new Error('Evolution API error 500: Internal Server Error') }
+    const result = await sendWhatsApp(prospect, message, config, deps)
     assert.equal(result.ok, false)
     assert.ok(typeof result.reason === 'string' && result.reason.length > 0, 'reason deve ser string nao vazia')
+    assert.ok(result.reason.includes('500'))
   })
 
   it('NAO chama recordSend quando sendTextMessage rejeita', async () => {
-    globalThis.fetch = async () => ({
-      ok: false,
-      status: 500,
-      text: async () => 'Error'
-    })
-    await sendWhatsApp(prospect, message, config)
+    deps.sendTextMessage = async () => { throw new Error('send failed') }
+    await sendWhatsApp(prospect, message, config, deps)
     assert.equal(recordSendCalls.length, 0)
   })
 
   it('aplica delay >= 3000ms e <= 8000ms apos envio bem-sucedido', async () => {
-    globalThis.fetch = async () => ({
-      ok: true,
-      json: async () => ({}),
-      text: async () => ''
-    })
     let capturedDelay = null
     globalThis.setTimeout = (fn, delay) => {
       capturedDelay = delay
       fn()
       return 1
     }
-    await sendWhatsApp(prospect, message, config)
+    await sendWhatsApp(prospect, message, config, deps)
     assert.ok(capturedDelay !== null, 'setTimeout deve ter sido chamado')
     assert.ok(capturedDelay >= 3000, `delay deve ser >= 3000ms, mas foi ${capturedDelay}`)
     assert.ok(capturedDelay <= 8000, `delay deve ser <= 8000ms, mas foi ${capturedDelay}`)
