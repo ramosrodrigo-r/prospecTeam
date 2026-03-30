@@ -124,10 +124,10 @@ Plans:
   4. The time between consecutive WhatsApp sends is random within the 3–8 second range — confirmed by observing timestamps in terminal output
   5. Running the bot when the Evolution API instance is disconnected prints a clear error and exits before attempting any send — does not silently fail or send to a null endpoint
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 05-01-PLAN.md — TDD: testes RED + implementacao GREEN para evolution.js, sender.js, env.js expandido
+- [x] 05-01-PLAN.md — TDD: testes RED + implementacao GREEN para evolution.js, sender.js, env.js expandido
 - [ ] 05-02-PLAN.md — Wire pipeline completo em bin/prospect.js + verificacao humana
 
 ---
@@ -177,7 +177,7 @@ Plans:
 | 2. Business Filter + Phone Normalization | 2/2 | Complete   | 2026-03-28 |
 | 3. Contact History + Deduplication | 1/2 | In Progress|  |
 | 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
-| 5. WhatsApp Send via Evolution API | 0/2 | Not started | - |
+| 5. WhatsApp Send via Evolution API | 1/2 | In Progress|  |
 | 6. Email Send via Zoho SMTP | 0/? | Not started | - |
 | 7. CLI Wiring + Operator UX | 0/? | Not started | - |
 

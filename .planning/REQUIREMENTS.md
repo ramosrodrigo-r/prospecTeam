@@ -17,8 +17,8 @@
 
 ### WhatsApp
 
-- [ ] **WA-01**: Bot envia mensagem via Evolution API para o número WhatsApp do negócio
-- [ ] **WA-02**: Bot aplica delay aleatório de 3-8 segundos entre envios WhatsApp
+- [x] **WA-01**: Bot envia mensagem via Evolution API para o número WhatsApp do negócio
+- [x] **WA-02**: Bot aplica delay aleatório de 3-8 segundos entre envios WhatsApp
 - [x] **WA-03**: Bot normaliza números brasileiros para formato E.164 antes de enviar
 
 ### Email
@@ -78,8 +78,8 @@
 | HIST-02 | Phase 3 | Complete |
 | HIST-03 | Phase 3 | Complete |
 | TMPL-01 | Phase 4 | Complete |
-| WA-01 | Phase 5 | Pending |
-| WA-02 | Phase 5 | Pending |
+| WA-01 | Phase 5 | Complete |
+| WA-02 | Phase 5 | Complete |
 | EMAIL-01 | Phase 6 | Pending |
 | EMAIL-02 | Phase 6 | Pending |
 | OPS-01 | Phase 7 | Pending |

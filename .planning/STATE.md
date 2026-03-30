@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-30T15:01:03.080Z"
+last_updated: "2026-03-30T17:45:50.973Z"
 progress:
   total_phases: 7
   completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 10
+  completed_plans: 9
 ---
 
 # Project State: ProspecTeam Bot
@@ -18,7 +18,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não tem razão de existir.
-**Current focus:** Phase 04 — message-template-rendering
+**Current focus:** Phase 05 — whatsapp-send-via-evolution-api
 
 ## Milestone
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 ## Current Position
 
-Phase: 5
-Plan: Not started
+Phase: 05 (whatsapp-send-via-evolution-api) — EXECUTING
+Plan: 2 of 2
 
 ## Phase Status
 
@@ -62,6 +62,9 @@ Plan: Not started
 - [Phase 04-message-template-rendering]: renderTemplate is a pure function with no imports — takes template string and vars object, returns rendered string
 - [Phase 04-message-template-rendering]: renderMessage separates prospect fields from CLI context (cidade/categoria) — prospect is immutable, context is separate param
 - [Phase 04-message-template-rendering]: TEMPLATE_PATH resolved at module load time using import.meta.url to ensure correct path regardless of process cwd
+- [Phase 05-whatsapp-send-via-evolution-api]: sender.js accepts optional _deps={}  4th parameter for dependency injection — mock.module not available in node:test v24 without experimental flags
+- [Phase 05-whatsapp-send-via-evolution-api]: validateEnv returns object { apiKey, evolutionApiUrl, evolutionApiKey, evolutionInstance } — breaking change from string return, bin/prospect.js update deferred to Plan 02
+- [Phase 05-whatsapp-send-via-evolution-api]: Evolution API uses apikey header (not Authorization Bearer) — applies to all future Evolution API calls
 
 ## Performance Metrics
 
@@ -75,6 +78,7 @@ Plan: Not started
 | Phase 03-contact-history-deduplication P02 | 1min | 2 tasks | 3 files |
 | Phase 04-message-template-rendering P01 | 1min | 2 tasks | 2 files |
 | Phase 04-message-template-rendering P02 | 1min | 2 tasks | 2 files |
+| Phase 05-whatsapp-send-via-evolution-api P01 | 15min | 2 tasks | 7 files |
 
 ## Next Action
 
