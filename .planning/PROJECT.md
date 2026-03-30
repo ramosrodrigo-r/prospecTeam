@@ -12,14 +12,13 @@ Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Substitui variáveis ({{nome}}, {{rating}}, etc.) em um template de mensagem fixo — Validated in Phase 04: message-template-rendering
 
 ### Active
 
 - [ ] Busca negócios no Google Places por cidade e categoria (passados via CLI)
 - [ ] Filtra negócios que não têm site ou cujo "site" é uma página do Instagram
 - [ ] Extrai nome, rating, e-mail e telefone WhatsApp de cada resultado
-- [ ] Substitui variáveis ({{nome}}, {{rating}}, etc.) em um template de mensagem fixo
 - [ ] Dispara mensagem via WhatsApp usando Evolution API
 - [ ] Dispara e-mail via Zoho Workspace (quando e-mail disponível; pula se ausente)
 - [ ] Mantém histórico de contatos já prospectados para evitar duplicatas
@@ -78,4 +77,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-28 after initialization*
+*Last updated: 2026-03-30 — Phase 04 complete: template rendering (renderTemplate + renderMessage) implementado e verificado*
