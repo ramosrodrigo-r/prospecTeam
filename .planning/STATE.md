@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-28T23:58:22.256Z"
+last_updated: "2026-03-30T14:25:34.972Z"
 progress:
   total_phases: 7
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 6
+  completed_plans: 5
 ---
 
 # Project State: ProspecTeam Bot
@@ -18,7 +18,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não tem razão de existir.
-**Current focus:** Phase 02 — business-filter-phone-normalization
+**Current focus:** Phase 03 — contact-history-deduplication
 
 ## Milestone
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
+Phase: 03 (contact-history-deduplication) — EXECUTING
+Plan: 2 of 2
 
 ## Phase Status
 
@@ -52,6 +52,8 @@ Plan: Not started
 - [Phase 02-business-filter-phone-normalization]: filterBusinesses uses hostname-based blocked-domain matching (instagram.com, linktr.ee) with protocol-prefixing and try/catch for parse failures
 - [Phase 02-business-filter-phone-normalization]: normalizePhone uses digit-length branching (10/11 digits prepend 55, 12/13 digits with 55 prefix pass through, other returns null with console.warn)
 - [Phase 02-business-filter-phone-normalization]: filterBusinesses called at end of fetchProspects before return, keeping filter concern inside the pipeline stage (D-08)
+- [Phase 03-contact-history-deduplication]: history.json usa formato { placeId: { sentAt: ISO8601 } } via Object.fromEntries(Map)
+- [Phase 03-contact-history-deduplication]: Write-then-rename atomico em history.js: writeFileSync para .tmp, renameSync para .json final — previne corrupcao em crash
 
 ## Performance Metrics
 
@@ -61,6 +63,7 @@ Plan: Not started
 | Phase 01-foundation-places P02 | 2min | 3 tasks | 5 files |
 | Phase 02-business-filter-phone-normalization P01 | 1min | 2 tasks | 4 files |
 | Phase 02-business-filter-phone-normalization P02 | 3min | 1 tasks | 2 files |
+| Phase 03-contact-history-deduplication P01 | 5min | 2 tasks | 2 files |
 
 ## Next Action
 

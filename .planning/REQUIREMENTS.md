@@ -28,9 +28,9 @@
 
 ### Histórico
 
-- [ ] **HIST-01**: Bot mantém histórico local de deduplicação com chave `place_id`
+- [x] **HIST-01**: Bot mantém histórico local de deduplicação com chave `place_id`
 - [ ] **HIST-02**: Bot pula contatos que já receberam mensagem em rodadas anteriores
-- [ ] **HIST-03**: Bot grava no histórico imediatamente após envio bem-sucedido
+- [x] **HIST-03**: Bot grava no histórico imediatamente após envio bem-sucedido
 
 ### Operacional
 
@@ -74,9 +74,9 @@
 | SRCH-03 | Phase 1 | Complete |
 | SRCH-02 | Phase 2 | Complete |
 | WA-03 | Phase 2 | Complete |
-| HIST-01 | Phase 3 | Pending |
+| HIST-01 | Phase 3 | Complete |
 | HIST-02 | Phase 3 | Pending |
-| HIST-03 | Phase 3 | Pending |
+| HIST-03 | Phase 3 | Complete |
 | TMPL-01 | Phase 4 | Pending |
 | WA-01 | Phase 5 | Pending |
 | WA-02 | Phase 5 | Pending |

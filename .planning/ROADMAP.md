@@ -80,10 +80,10 @@ Plans:
   3. Interrupting a run with Ctrl+C after some sends does not corrupt or empty `data/history.json` — the file contains exactly the entries that were successfully recorded before the interrupt
   4. History is loaded once into an in-memory Set at startup, not re-read on every send
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 03-01-PLAN.md — TDD history.js: testes RED + implementacao GREEN (loadHistory, isDuplicate, recordSend)
+- [x] 03-01-PLAN.md — TDD history.js: testes RED + implementacao GREEN (loadHistory, isDuplicate, recordSend)
 - [ ] 03-02-PLAN.md — TDD dedup.js: stage de deduplicacao + .gitignore
 
 ---
@@ -167,7 +167,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation + Google Places Search | 2/2 | Complete   | 2026-03-28 |
 | 2. Business Filter + Phone Normalization | 2/2 | Complete   | 2026-03-28 |
-| 3. Contact History + Deduplication | 0/2 | Planned | - |
+| 3. Contact History + Deduplication | 1/2 | In Progress|  |
 | 4. Message Template Rendering | 0/? | Not started | - |
 | 5. WhatsApp Send via Evolution API | 0/? | Not started | - |
 | 6. Email Send via Zoho SMTP | 0/? | Not started | - |
