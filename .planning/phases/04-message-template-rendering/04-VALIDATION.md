@@ -17,18 +17,18 @@ created: 2026-03-30
 
 | Property | Value |
 |----------|-------|
-| **Framework** | jest 29.x |
-| **Config file** | `package.json` (jest config inline) |
-| **Quick run command** | `npx jest src/utils/template.test.js --no-coverage` |
-| **Full suite command** | `npx jest --no-coverage` |
+| **Framework** | node:test (built-in, Node.js 24.13.1) |
+| **Config file** | none — built-in runner, invoked via `node --test` |
+| **Quick run command** | `node --test tests/unit/template.test.js` |
+| **Full suite command** | `node --test tests/unit/*.test.js` |
 | **Estimated runtime** | ~5 seconds |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** Run `npx jest src/utils/template.test.js --no-coverage`
-- **After every plan wave:** Run `npx jest --no-coverage`
+- **After every task commit:** Run `node --test tests/unit/template.test.js`
+- **After every plan wave:** Run `node --test tests/unit/*.test.js`
 - **Before `/gsd:verify-work`:** Full suite must be green
 - **Max feedback latency:** 5 seconds
 
@@ -38,10 +38,10 @@ created: 2026-03-30
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 4-01-01 | 01 | 1 | TMPL-01 | unit | `npx jest src/utils/template.test.js --no-coverage` | ❌ W0 | ⬜ pending |
-| 4-01-02 | 01 | 1 | TMPL-01 | unit | `npx jest src/utils/template.test.js --no-coverage` | ❌ W0 | ⬜ pending |
-| 4-02-01 | 02 | 2 | TMPL-01 | unit | `npx jest src/utils/template.test.js --no-coverage` | ❌ W0 | ⬜ pending |
-| 4-02-02 | 02 | 2 | TMPL-01 | integration | `npx jest --no-coverage` | ❌ W0 | ⬜ pending |
+| 4-01-01 | 01 | 1 | TMPL-01 | unit | `node -e "..."` (verifica placeholders no arquivo) | ❌ W0 | ⬜ pending |
+| 4-01-02 | 01 | 1 | TMPL-01 | unit | `node --test tests/unit/template.test.js` | ❌ W0 | ⬜ pending |
+| 4-02-01 | 02 | 2 | TMPL-01 | unit | `node --test tests/unit/template.test.js` | ❌ W0 | ⬜ pending |
+| 4-02-02 | 02 | 2 | TMPL-01 | integration | `node --test tests/unit/*.test.js` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -49,10 +49,10 @@ created: 2026-03-30
 
 ## Wave 0 Requirements
 
-- [ ] `src/utils/template.test.js` — testes unitários para `renderTemplate` (RED antes da implementação)
+- [ ] `tests/unit/template.test.js` — testes unitários para `renderTemplate` (RED antes da implementação)
 - [ ] Stubs dos casos: substituição correta dos 4 campos, fallback de `rating` nulo, ausência de placeholders não resolvidos
 
-*Infraestrutura jest já existe — apenas o arquivo de testes precisa ser criado.*
+*Infraestrutura node:test já existe — apenas o arquivo de testes precisa ser criado no Wave 1 (04-01).*
 
 ---
 
