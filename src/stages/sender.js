@@ -15,7 +15,7 @@ export async function sendWhatsApp(prospect, message, config, _deps = {}) {
       number: prospect.phone,
       text: message
     })
-    recordSend(prospect.placeId)
+    recordSend(prospect.placeId, 'wa')
     // Delay 3-8 seconds after send (per D-12, WA-02)
     const delay = 3000 + Math.floor(Math.random() * 5001)
     await new Promise(resolve => setTimeout(resolve, delay))

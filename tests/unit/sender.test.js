@@ -19,7 +19,7 @@ describe('sendWhatsApp', () => {
 
     // Default: sendTextMessage resolves successfully
     mockSendTextMessage = async () => ({ messageId: 'msg1' })
-    mockRecordSend = (placeId) => { recordSendCalls.push(placeId) }
+    mockRecordSend = (placeId, channel) => { recordSendCalls.push({ placeId, channel }) }
 
     // Default mock: setTimeout resolves immediately
     globalThis.setTimeout = (fn, delay) => {
@@ -39,10 +39,11 @@ describe('sendWhatsApp', () => {
     assert.deepStrictEqual(result, { ok: true })
   })
 
-  it('chama recordSend(prospect.placeId) quando sendTextMessage resolve', async () => {
+  it('chama recordSend(prospect.placeId, \'wa\') quando sendTextMessage resolve', async () => {
     await sendWhatsApp(prospect, message, config, deps)
     assert.equal(recordSendCalls.length, 1)
-    assert.equal(recordSendCalls[0], prospect.placeId)
+    assert.equal(recordSendCalls[0].placeId, prospect.placeId)
+    assert.equal(recordSendCalls[0].channel, 'wa')
   })
 
   it('retorna { ok: false, reason } quando sendTextMessage rejeita', async () => {
