@@ -7,12 +7,18 @@ describe('validateEnv', () => {
   let originalEvolutionApiUrl
   let originalEvolutionApiKey
   let originalEvolutionInstance
+  let originalZohoSmtpUser
+  let originalZohoSmtpPass
+  let originalEmailSubject
 
   beforeEach(() => {
     originalKey = process.env.GOOGLE_PLACES_API_KEY
     originalEvolutionApiUrl = process.env.EVOLUTION_API_URL
     originalEvolutionApiKey = process.env.EVOLUTION_API_KEY
     originalEvolutionInstance = process.env.EVOLUTION_INSTANCE
+    originalZohoSmtpUser = process.env.ZOHO_SMTP_USER
+    originalZohoSmtpPass = process.env.ZOHO_SMTP_PASS
+    originalEmailSubject = process.env.EMAIL_SUBJECT
   })
 
   afterEach(() => {
@@ -36,14 +42,32 @@ describe('validateEnv', () => {
     } else {
       process.env.EVOLUTION_INSTANCE = originalEvolutionInstance
     }
+    if (originalZohoSmtpUser === undefined) {
+      delete process.env.ZOHO_SMTP_USER
+    } else {
+      process.env.ZOHO_SMTP_USER = originalZohoSmtpUser
+    }
+    if (originalZohoSmtpPass === undefined) {
+      delete process.env.ZOHO_SMTP_PASS
+    } else {
+      process.env.ZOHO_SMTP_PASS = originalZohoSmtpPass
+    }
+    if (originalEmailSubject === undefined) {
+      delete process.env.EMAIL_SUBJECT
+    } else {
+      process.env.EMAIL_SUBJECT = originalEmailSubject
+    }
   })
 
-  // Helper to set all 4 vars
+  // Helper to set all 7 vars
   function setAllVars() {
     process.env.GOOGLE_PLACES_API_KEY = 'test-google-key'
     process.env.EVOLUTION_API_URL = 'http://localhost:8080'
     process.env.EVOLUTION_API_KEY = 'test-evolution-key'
     process.env.EVOLUTION_INSTANCE = 'test-instance'
+    process.env.ZOHO_SMTP_USER = 'user@example.com'
+    process.env.ZOHO_SMTP_PASS = 'test-zoho-pass'
+    process.env.EMAIL_SUBJECT = 'Site para {{nome}}'
   }
 
   it('throws when GOOGLE_PLACES_API_KEY is not set', () => {
@@ -65,14 +89,17 @@ describe('validateEnv', () => {
   })
 
   describe('validateEnv — Evolution API vars', () => {
-    it('retorna objeto { apiKey, evolutionApiUrl, evolutionApiKey, evolutionInstance } quando todas as 4 vars estao setadas', () => {
+    it('retorna objeto com todas as 7 vars quando todas estao setadas', () => {
       setAllVars()
       const result = validateEnv()
       assert.deepStrictEqual(result, {
         apiKey: 'test-google-key',
         evolutionApiUrl: 'http://localhost:8080',
         evolutionApiKey: 'test-evolution-key',
-        evolutionInstance: 'test-instance'
+        evolutionInstance: 'test-instance',
+        zohoSmtpUser: 'user@example.com',
+        zohoSmtpPass: 'test-zoho-pass',
+        emailSubject: 'Site para {{nome}}'
       })
     })
 

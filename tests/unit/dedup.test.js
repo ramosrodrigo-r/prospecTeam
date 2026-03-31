@@ -28,8 +28,10 @@ describe('dedupProspects', () => {
     assert.equal(dedupProspects(prospects).length, 2)
   })
 
-  it('filtra prospects ja no historico', () => {
-    writeFileSync(HISTORY_FILE, JSON.stringify({ A: { sentAt: '2026-01-01T00:00:00.000Z' } }), 'utf8')
+  it('filtra prospects ja no historico (ambos canais enviados)', () => {
+    writeFileSync(HISTORY_FILE, JSON.stringify({
+      A: { wa: '2026-01-01T00:00:00.000Z', email: '2026-01-01T00:00:00.000Z' }
+    }), 'utf8')
     loadHistory()
     const prospects = [{ placeId: 'A', name: 'A' }, { placeId: 'B', name: 'B' }]
     const result = dedupProspects(prospects)
@@ -37,10 +39,10 @@ describe('dedupProspects', () => {
     assert.equal(result[0].placeId, 'B')
   })
 
-  it('retorna vazio quando todos sao duplicatas', () => {
+  it('retorna vazio quando todos sao duplicatas (ambos canais enviados)', () => {
     writeFileSync(HISTORY_FILE, JSON.stringify({
-      X: { sentAt: '2026-01-01T00:00:00.000Z' },
-      Y: { sentAt: '2026-01-01T00:00:00.000Z' }
+      X: { wa: '2026-01-01T00:00:00.000Z', email: '2026-01-01T00:00:00.000Z' },
+      Y: { wa: '2026-01-01T00:00:00.000Z', email: '2026-01-01T00:00:00.000Z' }
     }), 'utf8')
     loadHistory()
     const prospects = [{ placeId: 'X' }, { placeId: 'Y' }]
