@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-31T13:53:05.231Z"
+last_updated: "2026-03-31T17:25:46.635Z"
 progress:
   total_phases: 7
   completed_phases: 5
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 12
+  completed_plans: 11
 ---
 
 # Project State: ProspecTeam Bot
@@ -18,7 +18,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não tem razão de existir.
-**Current focus:** Phase 05 — whatsapp-send-via-evolution-api
+**Current focus:** Phase 06 — email-send-via-zoho-smtp
 
 ## Milestone
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 ## Current Position
 
-Phase: 6
-Plan: Not started
+Phase: 06 (email-send-via-zoho-smtp) — EXECUTING
+Plan: 2 of 2
 
 ## Phase Status
 
@@ -70,6 +70,9 @@ Plan: Not started
 - [Phase 05-whatsapp-send-via-evolution-api]: Pipeline order enforced: validateEnv -> healthCheck -> fetchProspects -> loadHistory -> dedupProspects -> loop(renderMessage + sendWhatsApp)
 - [Phase 05-whatsapp-send-via-evolution-api]: Health check exits 1 on disconnected Evolution API instance before fetching any prospects
 - [Phase 05-whatsapp-send-via-evolution-api]: Exit code 0 mesmo quando todos os contatos falham — falhas por contato individual sao esperadas em outreach
+- [Phase 06-email-send-via-zoho-smtp]: isDuplicate(placeId, channel) and recordSend(placeId, channel) — channel-aware API, wa and email checks are independent
+- [Phase 06-email-send-via-zoho-smtp]: loadHistory migrates old { sentAt } schema to { wa: sentAt, email: null } in memory on read — no disk rewrite during migration
+- [Phase 06-email-send-via-zoho-smtp]: createZohoTransporter accepts optional _createTransport dep for unit testing without real SMTP
 
 ## Performance Metrics
 
@@ -86,6 +89,7 @@ Plan: Not started
 | Phase 05-whatsapp-send-via-evolution-api P01 | 15min | 2 tasks | 7 files |
 | Phase 05-whatsapp-send-via-evolution-api P02 | 2 | 1 tasks | 1 files |
 | Phase 05-whatsapp-send-via-evolution-api P02 | 5min | 2 tasks | 1 files |
+| Phase 06-email-send-via-zoho-smtp P01 | 2min | 2 tasks | 9 files |
 
 ## Next Action
 

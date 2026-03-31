@@ -23,8 +23,8 @@
 
 ### Email
 
-- [ ] **EMAIL-01**: Bot envia e-mail via Zoho SMTP quando e-mail estiver disponível
-- [ ] **EMAIL-02**: Bot pula o envio de e-mail silenciosamente quando não há e-mail no resultado
+- [x] **EMAIL-01**: Bot envia e-mail via Zoho SMTP quando e-mail estiver disponível
+- [x] **EMAIL-02**: Bot pula o envio de e-mail silenciosamente quando não há e-mail no resultado
 
 ### Histórico
 
@@ -80,8 +80,8 @@
 | TMPL-01 | Phase 4 | Complete |
 | WA-01 | Phase 5 | Complete |
 | WA-02 | Phase 5 | Complete |
-| EMAIL-01 | Phase 6 | Pending |
-| EMAIL-02 | Phase 6 | Pending |
+| EMAIL-01 | Phase 6 | Complete |
+| EMAIL-02 | Phase 6 | Complete |
 | OPS-01 | Phase 7 | Pending |
 | OPS-02 | Phase 7 | Pending |
 

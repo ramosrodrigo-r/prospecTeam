@@ -146,10 +146,10 @@ Plans:
   3. SPF and DKIM pass for the sending domain verified via `mail-tester.com` before the first live send
   4. The `From` header matches the authenticated Zoho account — Zoho does not reject the message as spoofing
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 06-01-PLAN.md — TDD: history.js channel-aware + zoho.js service + emailSender.js stage + testes
+- [x] 06-01-PLAN.md — TDD: history.js channel-aware + zoho.js service + emailSender.js stage + testes
 - [ ] 06-02-PLAN.md — Wire pipeline dual-channel em bin/prospect.js + verificacao humana
 
 ---
@@ -182,7 +182,7 @@ Plans:
 | 3. Contact History + Deduplication | 1/2 | In Progress|  |
 | 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
 | 5. WhatsApp Send via Evolution API | 2/2 | Complete   | 2026-03-30 |
-| 6. Email Send via Zoho SMTP | 0/2 | Not started | - |
+| 6. Email Send via Zoho SMTP | 1/2 | In Progress|  |
 | 7. CLI Wiring + Operator UX | 0/? | Not started | - |
 
 ---
