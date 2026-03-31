@@ -13,16 +13,16 @@ Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não
 ### Validated
 
 - [x] Substitui variáveis ({{nome}}, {{rating}}, etc.) em um template de mensagem fixo — Validated in Phase 04: message-template-rendering
+- [x] Dispara mensagem via WhatsApp usando Evolution API — Validated in Phase 05: whatsapp-send-via-evolution-api
+- [x] Mantém histórico de contatos já prospectados para evitar duplicatas — Validated in Phase 05: whatsapp-send-via-evolution-api
+- [x] Exibe log claro no terminal com status de cada envio — Validated in Phase 05: whatsapp-send-via-evolution-api
 
 ### Active
 
 - [ ] Busca negócios no Google Places por cidade e categoria (passados via CLI)
 - [ ] Filtra negócios que não têm site ou cujo "site" é uma página do Instagram
 - [ ] Extrai nome, rating, e-mail e telefone WhatsApp de cada resultado
-- [ ] Dispara mensagem via WhatsApp usando Evolution API
 - [ ] Dispara e-mail via Zoho Workspace (quando e-mail disponível; pula se ausente)
-- [ ] Mantém histórico de contatos já prospectados para evitar duplicatas
-- [ ] Exibe log claro no terminal com status de cada envio
 
 ### Out of Scope
 
@@ -77,4 +77,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-30 — Phase 04 complete: template rendering (renderTemplate + renderMessage) implementado e verificado*
+*Last updated: 2026-03-31 — Phase 05 complete: Evolution API service + sender stage + pipeline orchestrator (bin/prospect.js) implementado e verificado com instância real*
