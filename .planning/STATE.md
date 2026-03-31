@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-31T17:25:46.635Z"
+last_updated: "2026-03-31T23:37:12.607Z"
 progress:
   total_phases: 7
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State: ProspecTeam Bot
@@ -73,6 +73,8 @@ Plan: 2 of 2
 - [Phase 06-email-send-via-zoho-smtp]: isDuplicate(placeId, channel) and recordSend(placeId, channel) — channel-aware API, wa and email checks are independent
 - [Phase 06-email-send-via-zoho-smtp]: loadHistory migrates old { sentAt } schema to { wa: sentAt, email: null } in memory on read — no disk rewrite during migration
 - [Phase 06-email-send-via-zoho-smtp]: createZohoTransporter accepts optional _createTransport dep for unit testing without real SMTP
+- [Phase 06-email-send-via-zoho-smtp]: dedupProspects keeps prospect if either wa or email channel still pending — per-channel guards in loop body handle individual skips
+- [Phase 06-email-send-via-zoho-smtp]: createZohoTransporter initialized once before loop (singleton), not per-prospect — email subject rendered per-prospect via renderTemplate for variable substitution
 
 ## Performance Metrics
 
@@ -90,6 +92,7 @@ Plan: 2 of 2
 | Phase 05-whatsapp-send-via-evolution-api P02 | 2 | 1 tasks | 1 files |
 | Phase 05-whatsapp-send-via-evolution-api P02 | 5min | 2 tasks | 1 files |
 | Phase 06-email-send-via-zoho-smtp P01 | 2min | 2 tasks | 9 files |
+| Phase 06-email-send-via-zoho-smtp P02 | 525997min | 2 tasks | 8 files |
 
 ## Next Action
 

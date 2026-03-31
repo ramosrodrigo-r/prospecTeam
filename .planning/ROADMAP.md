@@ -13,7 +13,7 @@
 - [ ] **Phase 3: Contact History + Deduplication** - Local JSON history keyed by `place_id` that prevents duplicate sends across runs
 - [x] **Phase 4: Message Template Rendering** - Fixed outreach template with variable substitution producing send-ready messages (completed 2026-03-30)
 - [x] **Phase 5: WhatsApp Send via Evolution API** - Primary channel sender with mandatory random delays and per-session caps to protect account health (completed 2026-03-30)
-- [ ] **Phase 6: Email Send via Zoho SMTP** - Secondary channel sender with graceful skip when email is absent
+- [x] **Phase 6: Email Send via Zoho SMTP** - Secondary channel sender with graceful skip when email is absent (completed 2026-03-31)
 - [ ] **Phase 7: CLI Wiring + Operator UX** - Full pipeline orchestration with Commander.js entry point and chalk-formatted terminal output
 
 ---
@@ -146,11 +146,11 @@ Plans:
   3. SPF and DKIM pass for the sending domain verified via `mail-tester.com` before the first live send
   4. The `From` header matches the authenticated Zoho account — Zoho does not reject the message as spoofing
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 06-01-PLAN.md — TDD: history.js channel-aware + zoho.js service + emailSender.js stage + testes
-- [ ] 06-02-PLAN.md — Wire pipeline dual-channel em bin/prospect.js + verificacao humana
+- [x] 06-02-PLAN.md — Wire pipeline dual-channel em bin/prospect.js + verificacao humana
 
 ---
 
@@ -182,7 +182,7 @@ Plans:
 | 3. Contact History + Deduplication | 1/2 | In Progress|  |
 | 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
 | 5. WhatsApp Send via Evolution API | 2/2 | Complete   | 2026-03-30 |
-| 6. Email Send via Zoho SMTP | 1/2 | In Progress|  |
+| 6. Email Send via Zoho SMTP | 2/2 | Complete   | 2026-03-31 |
 | 7. CLI Wiring + Operator UX | 0/? | Not started | - |
 
 ---
