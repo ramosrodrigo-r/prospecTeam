@@ -58,10 +58,10 @@ completed: 2026-03-30
 
 ## Performance
 
-- **Duration:** ~2 min
+- **Duration:** ~5 min
 - **Started:** 2026-03-30T17:47:18Z
-- **Completed:** 2026-03-30T17:48:15Z
-- **Tasks:** 1 auto (Task 2 is checkpoint awaiting human verification)
+- **Completed:** 2026-03-31T13:47:45Z
+- **Tasks:** 2 (1 auto + 1 human-verify)
 - **Files modified:** 1
 
 ## Accomplishments
@@ -76,8 +76,9 @@ completed: 2026-03-30
 Each task was committed atomically:
 
 1. **Task 1: Reescrever bin/prospect.js com pipeline completo v1** - `8417beb` (feat)
+2. **Task 2: Verificar pipeline completo com instancia Evolution API real** - aprovado pelo usuario (human-verify checkpoint)
 
-**Plan metadata:** pending (checkpoint not yet verified)
+**Plan metadata:** `5e4bb66` (docs: complete pipeline wiring plan)
 
 ## Files Created/Modified
 - `bin/prospect.js` - Complete pipeline orchestrator replacing debug-only script
@@ -102,19 +103,14 @@ None - no external service configuration required beyond what is already in .env
 
 ## Checkpoint Status
 
-Plan paused at **Task 2: Verificar pipeline completo com instancia Evolution API real** (checkpoint:human-verify).
-
-The user must:
-1. Ensure `.env` has all 4 vars: `GOOGLE_PLACES_API_KEY`, `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE`
-2. Ensure Evolution API instance is connected (QR code scanned)
-3. Run: `node bin/prospect.js --city "Campinas" --category "padaria"`
-4. Verify: health check passes, each contact produces `[WA sent]` or `[WA failed:]` line, delay visible between sends, exit code 0
-5. Run same command again — should print "No new prospects to contact." (dedup works)
+Task 2 (checkpoint:human-verify) **approved by user**. Pipeline verified to work end-to-end with a real Evolution API instance.
 
 ## Next Phase Readiness
 
-- bin/prospect.js pipeline complete and ready for real-world verification
-- After human verification: Phase 05 complete, ready for Phase 06 (email via Zoho SMTP)
+- Phase 05 complete — WhatsApp outreach pipeline fully operational
+- Pipeline executado e verificado com instancia Evolution API real
+- Dedup funcional confirmado na segunda execucao
+- Pronto para Phase 06 (email via Zoho SMTP) como canal paralelo ao WhatsApp
 
 ## Known Stubs
 
@@ -124,7 +120,9 @@ None — all pipeline stages are fully wired with real implementations.
 
 - `bin/prospect.js` — FOUND
 - `05-02-SUMMARY.md` — FOUND
-- commit `8417beb` — FOUND
+- commit `8417beb` (Task 1: pipeline rewrite) — FOUND
+- commit `5e4bb66` (docs: checkpoint) — FOUND
+- Task 2 human-verify checkpoint — APPROVED by user
 
 ---
 *Phase: 05-whatsapp-send-via-evolution-api*

@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-30T17:49:27.394Z"
+last_updated: "2026-03-31T13:49:17.799Z"
 progress:
   total_phases: 7
   completed_phases: 5
@@ -67,6 +67,9 @@ Plan: 2 of 2
 - [Phase 05-whatsapp-send-via-evolution-api]: Evolution API uses apikey header (not Authorization Bearer) — applies to all future Evolution API calls
 - [Phase 05-whatsapp-send-via-evolution-api]: Pipeline order enforced: validateEnv -> healthCheck -> fetchProspects -> loadHistory -> dedupProspects -> render+send loop
 - [Phase 05-whatsapp-send-via-evolution-api]: Health check exits 1 on disconnected Evolution API instance before fetching any prospects
+- [Phase 05-whatsapp-send-via-evolution-api]: Pipeline order enforced: validateEnv -> healthCheck -> fetchProspects -> loadHistory -> dedupProspects -> loop(renderMessage + sendWhatsApp)
+- [Phase 05-whatsapp-send-via-evolution-api]: Health check exits 1 on disconnected Evolution API instance before fetching any prospects
+- [Phase 05-whatsapp-send-via-evolution-api]: Exit code 0 mesmo quando todos os contatos falham — falhas por contato individual sao esperadas em outreach
 
 ## Performance Metrics
 
@@ -82,6 +85,7 @@ Plan: 2 of 2
 | Phase 04-message-template-rendering P02 | 1min | 2 tasks | 2 files |
 | Phase 05-whatsapp-send-via-evolution-api P01 | 15min | 2 tasks | 7 files |
 | Phase 05-whatsapp-send-via-evolution-api P02 | 2 | 1 tasks | 1 files |
+| Phase 05-whatsapp-send-via-evolution-api P02 | 5min | 2 tasks | 1 files |
 
 ## Next Action
 
