@@ -14,7 +14,7 @@
 - [x] **Phase 4: Message Template Rendering** - Fixed outreach template with variable substitution producing send-ready messages (completed 2026-03-30)
 - [x] **Phase 5: WhatsApp Send via Evolution API** - Primary channel sender with mandatory random delays and per-session caps to protect account health (completed 2026-03-30)
 - [x] **Phase 6: Email Send via Zoho SMTP** - Secondary channel sender with graceful skip when email is absent (completed 2026-03-31)
-- [ ] **Phase 7: CLI Wiring + Operator UX** - Full pipeline orchestration with Commander.js entry point and chalk-formatted terminal output
+- [x] **Phase 7: CLI Wiring + Operator UX** - Full pipeline orchestration with Commander.js entry point and per-contact status logging (completed 2026-04-01)
 
 ---
 
@@ -169,11 +169,11 @@ Plans:
   4. A network error or API failure on one contact is logged as `[failed: reason]` and the bot continues to the next contact without aborting the batch
   5. Missing `--city` or `--category` args produce a clear usage error with an example command — the bot never reaches the API with incomplete input
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 07-01-PLAN.md — Commander.js migration + onSkip callbacks em filter e dedup
-- [ ] 07-02-PLAN.md — Wire pipeline completo em bin/prospect.js + verificacao humana
+- [x] 07-01-PLAN.md — Commander.js migration + onSkip callbacks em filter e dedup
+- [x] 07-02-PLAN.md — Wire pipeline completo em bin/prospect.js + verificacao humana
 
 ---
 
@@ -187,7 +187,7 @@ Plans:
 | 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
 | 5. WhatsApp Send via Evolution API | 2/2 | Complete   | 2026-03-30 |
 | 6. Email Send via Zoho SMTP | 2/2 | Complete   | 2026-03-31 |
-| 7. CLI Wiring + Operator UX | 1/2 | In Progress|  |
+| 7. CLI Wiring + Operator UX | 2/2 | Complete   | 2026-04-01 |
 
 ---
 
