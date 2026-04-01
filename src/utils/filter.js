@@ -19,6 +19,12 @@ function hasRealWebsite(website) {
   return !isBlocked
 }
 
-export function filterBusinesses(prospects) {
-  return prospects.filter(prospect => !hasRealWebsite(prospect.website))
+export function filterBusinesses(prospects, onSkip) {
+  return prospects.filter(prospect => {
+    if (hasRealWebsite(prospect.website)) {
+      if (onSkip) onSkip(prospect, 'has-website', prospect.website)
+      return false
+    }
+    return true
+  })
 }

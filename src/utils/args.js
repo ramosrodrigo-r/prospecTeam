@@ -1,11 +1,16 @@
+import { Command } from 'commander'
+
 export function parseArgs(argv) {
-  const args = {}
-  for (let i = 2; i < argv.length; i++) {
-    if (argv[i] === '--city' && i + 1 < argv.length) {
-      args.city = argv[i + 1]
-    } else if (argv[i] === '--category' && i + 1 < argv.length) {
-      args.category = argv[i + 1]
-    }
-  }
-  return args
+  const program = new Command()
+  program
+    .name('prospect')
+    .description('ProspecTeam — bot de outreach via WhatsApp e email')
+    .requiredOption('--city <city>', 'cidade para buscar negocios')
+    .requiredOption('--category <category>', 'categoria de negocio')
+    .addHelpText('after', '\nExemplo:\n  node bin/prospect.js --city "Campinas" --category "academia"')
+    .exitOverride()
+
+  program.parse(argv)
+  const opts = program.opts()
+  return { city: opts.city, category: opts.category }
 }

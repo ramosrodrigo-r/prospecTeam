@@ -3,7 +3,7 @@ import { filterBusinesses } from '../utils/filter.js'
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
-export async function fetchProspects({ city, category, apiKey }) {
+export async function fetchProspects({ city, category, apiKey, onSkip }) {
   const query = `${category} em ${city}`
   const results = []
   let pageToken = null
@@ -27,5 +27,5 @@ export async function fetchProspects({ city, category, apiKey }) {
     pageToken = data.nextPageToken ?? null
   } while (pageToken)
 
-  return filterBusinesses(results)
+  return filterBusinesses(results, onSkip)
 }
