@@ -19,10 +19,10 @@ Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não
 
 ### Active
 
-- [ ] Busca negócios no Google Places por cidade e categoria (passados via CLI)
-- [ ] Filtra negócios que não têm site ou cujo "site" é uma página do Instagram
-- [ ] Extrai nome, rating, e-mail e telefone WhatsApp de cada resultado
-- [ ] Dispara e-mail via Zoho Workspace (quando e-mail disponível; pula se ausente)
+- [x] Busca negócios no Google Places por cidade e categoria (passados via CLI) — Validated in Phase 07: cli-wiring-operator-ux
+- [x] Filtra negócios que não têm site ou cujo "site" é uma página do Instagram — Validated in Phase 07: cli-wiring-operator-ux
+- [x] Extrai nome, rating, e-mail e telefone WhatsApp de cada resultado — Validated in Phase 07: cli-wiring-operator-ux
+- [x] Dispara e-mail via Zoho Workspace (quando e-mail disponível; pula se ausente) — Validated in Phase 06: email-send-via-zoho-smtp
 
 ### Out of Scope
 
@@ -77,4 +77,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-31 — Phase 05 complete: Evolution API service + sender stage + pipeline orchestrator (bin/prospect.js) implementado e verificado com instância real*
+*Last updated: 2026-04-01 — Phase 07 complete: CLI Wiring + Operator UX — milestone v1.0 completo. Bot pronto para uso: `node bin/prospect.js --city "Campinas" --category "academia"`*
