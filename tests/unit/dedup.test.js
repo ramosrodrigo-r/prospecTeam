@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterEach } from 'node:test'
+import { describe, it, beforeEach, afterEach, mock } from 'node:test'
 import assert from 'node:assert/strict'
 import { writeFileSync, rmSync, mkdirSync } from 'node:fs'
 import { loadHistory } from '../../src/history.js'
@@ -54,5 +54,42 @@ describe('dedupProspects', () => {
     const prospect = { placeId: 'Z', name: 'Padaria', rating: 4.2, phone: '11999', website: null, email: null }
     const result = dedupProspects([prospect])
     assert.deepEqual(result[0], prospect)
+  })
+
+  it('calls onSkip when both channels already sent', () => {
+    writeFileSync(HISTORY_FILE, JSON.stringify({
+      A: { wa: '2026-01-01T00:00:00.000Z', email: '2026-01-01T00:00:00.000Z' }
+    }), 'utf8')
+    loadHistory()
+    const prospect = { placeId: 'A', name: 'Test' }
+    const skipped = []
+    const onSkip = (p, reason, channels) => skipped.push({ p, reason, channels })
+    dedupProspects([prospect], onSkip)
+    assert.equal(skipped.length, 1)
+    assert.equal(skipped[0].p, prospect)
+    assert.equal(skipped[0].reason, 'already-contacted')
+    assert.deepEqual(skipped[0].channels, ['wa', 'email'])
+  })
+
+  it('does not call onSkip when at least one channel pending', () => {
+    writeFileSync(HISTORY_FILE, JSON.stringify({
+      A: { wa: '2026-01-01T00:00:00.000Z', email: null }
+    }), 'utf8')
+    loadHistory()
+    const prospect = { placeId: 'A', name: 'Test' }
+    let callCount = 0
+    const onSkip = () => callCount++
+    dedupProspects([prospect], onSkip)
+    assert.equal(callCount, 0)
+  })
+
+  it('works without onSkip callback (backward compatible)', () => {
+    writeFileSync(HISTORY_FILE, JSON.stringify({
+      A: { wa: '2026-01-01T00:00:00.000Z', email: '2026-01-01T00:00:00.000Z' }
+    }), 'utf8')
+    loadHistory()
+    const prospects = [{ placeId: 'A' }, { placeId: 'B' }]
+    const result = dedupProspects(prospects)
+    assert.equal(result.length, 1)
   })
 })

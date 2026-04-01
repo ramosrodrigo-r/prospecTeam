@@ -42,4 +42,27 @@ describe('filterBusinesses', () => {
     const result = filterBusinesses([{ website: '://invalid' }])
     assert.equal(result.length, 1)
   })
+
+  it('calls onSkip with prospect, reason, and URL when business has real website', () => {
+    const skipped = []
+    const onSkip = (prospect, reason, detail) => skipped.push({ prospect, reason, detail })
+    const prospect = { website: 'https://real.com', name: 'Biz' }
+    filterBusinesses([prospect], onSkip)
+    assert.equal(skipped.length, 1)
+    assert.equal(skipped[0].prospect, prospect)
+    assert.equal(skipped[0].reason, 'has-website')
+    assert.equal(skipped[0].detail, 'https://real.com')
+  })
+
+  it('does not call onSkip when business has no real website', () => {
+    let callCount = 0
+    const onSkip = () => callCount++
+    filterBusinesses([{ website: null, name: 'Biz' }], onSkip)
+    assert.equal(callCount, 0)
+  })
+
+  it('works without onSkip callback (backward compatible)', () => {
+    const result = filterBusinesses([{ website: 'https://real.com' }, { website: null }])
+    assert.equal(result.length, 1)
+  })
 })
