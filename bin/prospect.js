@@ -20,10 +20,12 @@ try {
   process.exit(1)
 }
 
-// 2. Parse CLI args
-const { city, category } = parseArgs(process.argv)
-if (!city || !category) {
-  console.error('Usage: node bin/prospect.js --city "Sao Paulo" --category "restaurante"')
+// 2. Parse CLI args (per D-02, D-03)
+let city, category
+try {
+  ({ city, category } = parseArgs(process.argv))
+} catch (err) {
+  // Commander.js already printed the error message to stderr
   process.exit(1)
 }
 
@@ -46,25 +48,32 @@ try {
 // 4. Initialize Zoho SMTP transporter
 createZohoTransporter({ user: env.zohoSmtpUser, pass: env.zohoSmtpPass })
 
-// 5. Fetch prospects
+// 5. Fetch prospects (per D-05, D-06, D-07)
 let prospects
 try {
-  prospects = await fetchProspects({ city, category, apiKey: env.apiKey })
+  prospects = await fetchProspects({
+    city, category, apiKey: env.apiKey,
+    onSkip: (prospect, reason, url) => {
+      console.log(`[SKIP ${reason}: ${url}] ${prospect.name}`)
+    }
+  })
 } catch (err) {
   console.error(`Error fetching prospects: ${err.message}`)
   process.exit(1)
 }
 
-// 6. Load history and dedup (keeps prospects with at least one channel pending)
+// 6. Load history and dedup (per D-08, D-09, D-10)
 loadHistory()
-prospects = dedupProspects(prospects)
+prospects = dedupProspects(prospects, (prospect, reason, channels) => {
+  console.log(`[SKIP ${reason}: ${channels.join('+')}] ${prospect.name}`)
+})
 
 if (prospects.length === 0) {
   console.log('No new prospects to contact.')
   process.exit(0)
 }
 
-// 7. Dual-channel loop: WA first, then email (per D-22, D-25: channels independent)
+// 7. Dual-channel loop with try/catch per contact (per D-11, D-12, D-13, D-14, D-15, OPS-02)
 const waConfig = {
   baseUrl: env.evolutionApiUrl,
   apiKey: env.evolutionApiKey,
@@ -73,34 +82,42 @@ const waConfig = {
 const emailConfig = { user: env.zohoSmtpUser, pass: env.zohoSmtpPass }
 
 for (const prospect of prospects) {
-  // Canal WA (per D-22)
-  if (prospect.phone && !isDuplicate(prospect.placeId, 'wa')) {
-    const message = renderMessage(prospect, { cidade: city, categoria: category })
-    const result = await sendWhatsApp(prospect, message, waConfig)
-    if (result.ok) {
-      console.log(`[WA sent] ${prospect.name}`)
-    } else {
-      console.log(`[WA failed: ${result.reason}] ${prospect.name}`)
+  try {
+    // Canal WA (per D-13, D-14)
+    if (prospect.phone && !isDuplicate(prospect.placeId, 'wa')) {
+      const message = renderMessage(prospect, { cidade: city, categoria: category })
+      const result = await sendWhatsApp(prospect, message, waConfig)
+      if (result.ok) {
+        console.log(`[WA sent] ${prospect.name}`)
+      } else {
+        console.log(`[WA failed: ${result.reason}] ${prospect.name}`)
+      }
+    } else if (!prospect.phone) {
+      // D-11: no-phone skip log — inline in loop, no change to sender.js or filter.js (D-12)
+      console.log(`[SKIP wa: no-phone] ${prospect.name}`)
     }
-  }
 
-  // Canal email (per D-22, D-20, D-21)
-  if (!isDuplicate(prospect.placeId, 'email')) {
-    const body = renderEmailMessage(prospect, { cidade: city, categoria: category })
-    const subject = renderTemplate(env.emailSubject, {
-      nome:      prospect.name   ?? '',
-      rating:    prospect.rating ?? '',
-      categoria: category        ?? '',
-      cidade:    city            ?? ''
-    })
-    const result = await sendEmail(prospect, body, subject, emailConfig)
-    if (!result.ok && result.reason === 'no email address') {
-      console.log(`[email skipped: no address] ${prospect.name}`)
-    } else if (result.ok) {
-      console.log(`[email sent] ${prospect.name}`)
-    } else {
-      console.log(`[email failed: ${result.reason}] ${prospect.name}`)
+    // Canal email (per D-14, D-15)
+    if (!isDuplicate(prospect.placeId, 'email')) {
+      const body = renderEmailMessage(prospect, { cidade: city, categoria: category })
+      const subject = renderTemplate(env.emailSubject, {
+        nome:      prospect.name   ?? '',
+        rating:    prospect.rating ?? '',
+        categoria: category        ?? '',
+        cidade:    city            ?? ''
+      })
+      const result = await sendEmail(prospect, body, subject, emailConfig)
+      if (!result.ok && result.reason === 'no email address') {
+        console.log(`[email skipped: no address] ${prospect.name}`)
+      } else if (result.ok) {
+        console.log(`[email sent] ${prospect.name}`)
+      } else {
+        console.log(`[email failed: ${result.reason}] ${prospect.name}`)
+      }
     }
+  } catch (err) {
+    // OPS-02: per-contact error resilience — log and continue
+    console.log(`[failed: ${err.message}] ${prospect.name}`)
   }
 }
 
