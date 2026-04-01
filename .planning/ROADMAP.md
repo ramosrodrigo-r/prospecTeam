@@ -169,7 +169,11 @@ Plans:
   4. A network error or API failure on one contact is logged as `[failed: reason]` and the bot continues to the next contact without aborting the batch
   5. Missing `--city` or `--category` args produce a clear usage error with an example command — the bot never reaches the API with incomplete input
 
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Commander.js migration + onSkip callbacks em filter e dedup
+- [ ] 07-02-PLAN.md — Wire pipeline completo em bin/prospect.js + verificacao humana
 
 ---
 
@@ -183,7 +187,7 @@ Plans:
 | 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
 | 5. WhatsApp Send via Evolution API | 2/2 | Complete   | 2026-03-30 |
 | 6. Email Send via Zoho SMTP | 2/2 | Complete   | 2026-03-31 |
-| 7. CLI Wiring + Operator UX | 0/? | Not started | - |
+| 7. CLI Wiring + Operator UX | 0/2 | Not started | - |
 
 ---
 
@@ -200,7 +204,7 @@ Plans:
 | HIST-03 | Phase 3 | Write to history immediately after confirmed send |
 | TMPL-01 | Phase 4 | Substitute `{{nome}}`, `{{rating}}`, `{{categoria}}`, `{{cidade}}` |
 | WA-01 | Phase 5 | Send WhatsApp via Evolution API |
-| WA-02 | Phase 5 | Random 3–8 second delay between WhatsApp sends |
+| WA-02 | Phase 5 | Random 3-8 second delay between WhatsApp sends |
 | EMAIL-01 | Phase 6 | Send email via Zoho SMTP when address available |
 | EMAIL-02 | Phase 6 | Skip email silently when address absent |
 | OPS-01 | Phase 7 | Per-contact terminal status (name, channel, outcome) |
@@ -224,7 +228,7 @@ These are not phases — they are constraints the implementation must satisfy. T
 | Phone normalization exists before WhatsApp sender | `src/utils/phone.js` | Phase 2 |
 | Deduplication history exists before any live send | `src/history.js` | Phase 3 |
 | History written per-send, not at batch end | `src/history.js` | Phase 3 |
-| WhatsApp send delay is random 3–8s (never fixed interval) | `stages/sender.js` | Phase 5 |
+| WhatsApp send delay is random 3-8s (never fixed interval) | `stages/sender.js` | Phase 5 |
 | No bulk `/chat/whatsappNumbers` validation calls | `services/evolution.js` | Phase 5 |
 | Evolution API instance health check at startup | `services/evolution.js` | Phase 5 |
 | SPF/DKIM verified before first live email send | Operational pre-flight | Phase 6 |
@@ -232,4 +236,4 @@ These are not phases — they are constraints the implementation must satisfy. T
 ---
 
 *Roadmap created: 2026-03-28*
-*Last updated: 2026-03-31 after Phase 6 planning*
+*Last updated: 2026-04-01 after Phase 7 planning*
