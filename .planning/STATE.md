@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-31T23:37:46.181Z"
+last_updated: "2026-04-01T16:06:01Z"
 progress:
   total_phases: 7
   completed_phases: 6
-  total_plans: 12
-  completed_plans: 12
+  total_plans: 14
+  completed_plans: 13
 ---
 
 # Project State: ProspecTeam Bot
@@ -18,7 +18,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não tem razão de existir.
-**Current focus:** Phase 06 — email-send-via-zoho-smtp
+**Current focus:** Phase 07 — cli-wiring-operator-ux
 
 ## Milestone
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 ## Current Position
 
 Phase: 7
-Plan: Not started
+Plan: 1 complete (Plan 2 next)
 
 ## Phase Status
 
@@ -39,7 +39,7 @@ Plan: Not started
 | 4 | Message Template Rendering | ○ Pending | TBD |
 | 5 | WhatsApp Send via Evolution API | ○ Pending | TBD |
 | 6 | Email Send via Zoho SMTP | ○ Pending | TBD |
-| 7 | CLI Wiring + Operator UX | ○ Pending | TBD |
+| 7 | CLI Wiring + Operator UX | ◑ In Progress | 1/2 complete |
 
 ## Decisions
 
@@ -75,6 +75,9 @@ Plan: Not started
 - [Phase 06-email-send-via-zoho-smtp]: createZohoTransporter accepts optional _createTransport dep for unit testing without real SMTP
 - [Phase 06-email-send-via-zoho-smtp]: dedupProspects keeps prospect if either wa or email channel still pending — per-channel guards in loop body handle individual skips
 - [Phase 06-email-send-via-zoho-smtp]: createZohoTransporter initialized once before loop (singleton), not per-prospect — email subject rendered per-prospect via renderTemplate for variable substitution
+- [Phase 07-cli-wiring-operator-ux]: Commander.js uses .exitOverride() so test suite can catch CommanderError instead of process.exit — required for testability
+- [Phase 07-cli-wiring-operator-ux]: onSkip callbacks are optional (backward compatible) — callers not yet updated still work without modification
+- [Phase 07-cli-wiring-operator-ux]: onSkip(item, reason, detail) uniform signature for all skip callbacks across pipeline stages
 
 ## Performance Metrics
 
@@ -93,11 +96,12 @@ Plan: Not started
 | Phase 05-whatsapp-send-via-evolution-api P02 | 5min | 2 tasks | 1 files |
 | Phase 06-email-send-via-zoho-smtp P01 | 2min | 2 tasks | 9 files |
 | Phase 06-email-send-via-zoho-smtp P02 | 525997min | 2 tasks | 8 files |
+| Phase 07-cli-wiring-operator-ux P01 | 2min | 1 tasks | 8 files |
 
 ## Next Action
 
-Run `/gsd:execute-phase 01-foundation-places` to execute Plan 02 (implement source modules).
+Run `/gsd:execute-phase 07-cli-wiring-operator-ux` to execute Plan 02 (wire Commander + skip logging into bin/prospect.js).
 
 ---
 *Initialized: 2026-03-28*
-*Last updated: 2026-03-28*
+*Last updated: 2026-04-01*

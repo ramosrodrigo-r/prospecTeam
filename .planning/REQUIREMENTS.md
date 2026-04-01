@@ -34,7 +34,7 @@
 
 ### Operacional
 
-- [ ] **OPS-01**: Bot exibe status por contato no terminal (nome, canal, sucesso/erro)
+- [x] **OPS-01**: Bot exibe status por contato no terminal (nome, canal, sucesso/erro)
 - [ ] **OPS-02**: Bot continua processando em caso de erro por contato (não aborta o lote)
 
 ## v2 Requirements
@@ -82,7 +82,7 @@
 | WA-02 | Phase 5 | Complete |
 | EMAIL-01 | Phase 6 | Complete |
 | EMAIL-02 | Phase 6 | Complete |
-| OPS-01 | Phase 7 | Pending |
+| OPS-01 | Phase 7 | Complete |
 | OPS-02 | Phase 7 | Pending |
 
 **Coverage:**

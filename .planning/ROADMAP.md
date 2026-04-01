@@ -169,7 +169,7 @@ Plans:
   4. A network error or API failure on one contact is logged as `[failed: reason]` and the bot continues to the next contact without aborting the batch
   5. Missing `--city` or `--category` args produce a clear usage error with an example command — the bot never reaches the API with incomplete input
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 07-01-PLAN.md — Commander.js migration + onSkip callbacks em filter e dedup
@@ -187,7 +187,7 @@ Plans:
 | 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
 | 5. WhatsApp Send via Evolution API | 2/2 | Complete   | 2026-03-30 |
 | 6. Email Send via Zoho SMTP | 2/2 | Complete   | 2026-03-31 |
-| 7. CLI Wiring + Operator UX | 0/2 | Not started | - |
+| 7. CLI Wiring + Operator UX | 1/2 | In Progress|  |
 
 ---
 
