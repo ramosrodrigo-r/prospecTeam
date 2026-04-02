@@ -8,67 +8,89 @@ Bot de prospecção em Node.js que busca negócios no Google Places sem presenç
 
 Encontrar e contatar automaticamente negócios sem site — sem isso, o bot não tem razão de existir.
 
+## Current State
+
+**v1.0 MVP — SHIPPED 2026-04-02**
+
+- 7 fases, 14 planos executados
+- 466 LOC em `src/` + `bin/`, 1162 LOC em `tests/`
+- 97 testes unitários (node:test built-in, zero dependências de teste)
+- Stack: Node.js ESM, Commander.js, dotenv, nodemailer, Google Places API v1, Evolution API, Zoho SMTP
+- Pronto para uso: `node bin/prospect.js --city "Campinas" --category "academia"`
+
 ## Requirements
 
-### Validated
+### Validated (v1.0)
 
-- [x] Substitui variáveis ({{nome}}, {{rating}}, etc.) em um template de mensagem fixo — Validated in Phase 04: message-template-rendering
-- [x] Dispara mensagem via WhatsApp usando Evolution API — Validated in Phase 05: whatsapp-send-via-evolution-api
-- [x] Mantém histórico de contatos já prospectados para evitar duplicatas — Validated in Phase 05: whatsapp-send-via-evolution-api
-- [x] Exibe log claro no terminal com status de cada envio — Validated in Phase 05: whatsapp-send-via-evolution-api
+- ✓ Busca negócios no Google Places via `--city` e `--category` no CLI — v1.0 (SRCH-01)
+- ✓ Filtra negócios sem site real (campo ausente ou URL do Instagram/bio-link) — v1.0 (SRCH-02)
+- ✓ Extrai nome, rating, telefone e e-mail de cada resultado — v1.0 (SRCH-03)
+- ✓ Substitui variáveis (`{{nome}}`, `{{rating}}`, `{{categoria}}`, `{{cidade}}`) no template de mensagem fixo — v1.0 (TMPL-01)
+- ✓ Envia mensagem via Evolution API para o número WhatsApp do negócio — v1.0 (WA-01)
+- ✓ Aplica delay aleatório de 3-8 segundos entre envios WhatsApp — v1.0 (WA-02)
+- ✓ Normaliza números brasileiros para formato E.164 antes de enviar — v1.0 (WA-03)
+- ✓ Envia e-mail via Zoho SMTP quando e-mail estiver disponível — v1.0 (EMAIL-01)
+- ✓ Pula o envio de e-mail silenciosamente quando não há e-mail no resultado — v1.0 (EMAIL-02)
+- ✓ Mantém histórico local de deduplicação com chave `place_id` — v1.0 (HIST-01)
+- ✓ Pula contatos que já receberam mensagem em rodadas anteriores — v1.0 (HIST-02)
+- ✓ Grava no histórico imediatamente após envio bem-sucedido — v1.0 (HIST-03)
+- ✓ Exibe status por contato no terminal (nome, canal, sucesso/erro) — v1.0 (OPS-01)
+- ✓ Continua processando em caso de erro por contato (não aborta o lote) — v1.0 (OPS-02)
 
-### Active
+### Active (v2 candidates)
 
-- [x] Busca negócios no Google Places por cidade e categoria (passados via CLI) — Validated in Phase 07: cli-wiring-operator-ux
-- [x] Filtra negócios que não têm site ou cujo "site" é uma página do Instagram — Validated in Phase 07: cli-wiring-operator-ux
-- [x] Extrai nome, rating, e-mail e telefone WhatsApp de cada resultado — Validated in Phase 07: cli-wiring-operator-ux
-- [x] Dispara e-mail via Zoho Workspace (quando e-mail disponível; pula se ausente) — Validated in Phase 06: email-send-via-zoho-smtp
+- [ ] Paginação via `next_page_token` — busca até 60 resultados por rodada (SRCH-04)
+- [ ] Modo dry-run (`--dry-run`) — simula envios sem efeito colateral (CLI-01)
+- [ ] Resumo ao final da execução (total enviados WA / email / pulados / erros) (CLI-02)
+- [ ] Caminho de template configurável via `--template ./msg.txt` (CLI-03)
+- [ ] Log persistente em arquivo `outreach-log-YYYY-MM-DD.txt` (OPS-03)
 
 ### Out of Scope
 
-- Interface web — ferramenta interna de CLI, painel não agrega valor agora
-- Múltiplos templates — um template fixo é suficiente para v1
-- Templates separados por canal — mesma mensagem para e-mail e WhatsApp em v1
-- Scraping de e-mail fora do Google Places — fora do escopo desta versão
+- Interface web / dashboard — CLI com output legível é suficiente para uso interno
+- Múltiplos templates — variáveis cobrem personalização em v1
+- Sequências de follow-up — requer agendamento e máquina de estado; validar canal primeiro
+- Scraping de e-mail fora do Google Places — risco de ToS e parsing frágil
+- Sincronização com CRM — histórico local é o CRM do v1
+- Personalização via IA — custo e latência; substituição de variáveis já é suficiente
+- Gerenciamento de respostas do WhatsApp — requer webhook persistente; produto diferente
+- Validação em lote de números antes do envio — risco de ban por bulk-check
 
 ## Context
 
-- Stack: Node.js, CLI
-- WhatsApp: Evolution API (já configurada pelo time)
-- E-mail: Zoho Workspace (já disponível)
-- Fonte de dados: Google Places API (com API key própria)
-- O Google Places raramente retorna e-mail; quando ausente, só WhatsApp é enviado
-- Instagram como "site" deve ser tratado como ausência de site real
-- O time prospecta cidades e categorias variadas a cada rodada de outreach
-
-## Constraints
-
-- **Tech Stack**: Node.js — já definido pelo time
-- **WhatsApp**: Evolution API — já em uso, não mudar
-- **E-mail**: Zoho Workspace — já disponível, usar SMTP ou API do Zoho
-- **Dados**: Apenas o que a Google Places API retorna — sem scraping adicional
+- Stack: Node.js ESM, zero frameworks de teste (node:test built-in)
+- WhatsApp: Evolution API com `apikey` header (não Authorization Bearer)
+- E-mail: Zoho Workspace SMTP com nodemailer
+- Fonte de dados: Google Places API v1 com FieldMask restrito
+- Histórico: `data/history.json` com schema `{ placeId: { wa: sentAt, email: sentAt|null } }`
+- Google Places raramente retorna e-mail; bot opera bem só-WhatsApp
+- Template fixo em `templates/outreach.txt` — editável sem tocar JS
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Instagram = sem site | Negócios com só Instagram não têm presença web real | — Pending |
-| Pular e-mail quando ausente | Google Places raramente retorna e-mail; bloquear por isso reduz muito o alcance | — Pending |
-| Histórico local de duplicatas | Evita reenvio para o mesmo negócio em buscas futuras | — Pending |
-| Template único para ambos os canais | Simplicidade em v1; fácil de ajustar depois | — Pending |
+| node:test built-in como framework de teste | Zero dependência, consistente com filosofia minimal | ✓ Bom — 97 testes estáveis |
+| globalThis.fetch mock direto (sem biblioteca) | Simplicidade; disponível no Node v18+ | ✓ Bom — funciona em todos os testes de fetch |
+| dotenv/config como primeiro import ESM | Garante carregamento do .env antes de qualquer módulo | ✓ Bom — sem erros de env na inicialização |
+| Commander.js com .exitOverride() | Testabilidade — testes podem capturar CommanderError sem process.exit | ✓ Bom — args testáveis de forma limpa |
+| History channel-aware (wa + email independentes) | Permite recontato via canal diferente se um falhou | ✓ Bom — dedup correto por canal |
+| Write-then-rename atômico para history.json | Previne corrupção em crash | ✓ Bom — padrão seguro |
+| onSkip callback opcional em filter/dedup | Backward compatible — callers sem callback ainda funcionam | ✓ Bom — nenhuma breaking change |
+| try/catch por contato no loop principal | OPS-02: erro em um contato não aborta o lote | ✓ Bom — resiliência validada |
+| Evolution API: header `apikey` (não Bearer) | Formato proprietário da Evolution API | ✓ Bom — crítico para autenticação |
+| Exit code 0 mesmo quando todos os contatos falham | Falhas individuais são esperadas em outreach | ✓ Bom — sem alarmes falsos em CI |
+
+## Constraints
+
+- **Tech Stack**: Node.js — definido pelo time
+- **WhatsApp**: Evolution API — já em uso, não mudar
+- **E-mail**: Zoho Workspace — já disponível, usar SMTP
+- **Dados**: Apenas o que a Google Places API retorna — sem scraping adicional
 
 ---
 
 ## Evolution
-
-This document evolves at phase transitions and milestone boundaries.
-
-**After each phase transition** (via `/gsd:transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
 
 **After each milestone** (via `/gsd:complete-milestone`):
 1. Full review of all sections
@@ -77,4 +99,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-01 — Phase 07 complete: CLI Wiring + Operator UX — milestone v1.0 completo. Bot pronto para uso: `node bin/prospect.js --city "Campinas" --category "academia"`*
+*Last updated: 2026-04-02 after v1.0 milestone — all 14 plans shipped, bot ready for production use*

@@ -1,239 +1,26 @@
 # Roadmap: ProspecTeam Bot
 
-**Milestone:** v1 — Working outreach bot
-**Granularity:** Standard
-**Requirements coverage:** 14/14 v1 requirements mapped
+## Milestones
 
----
+- ✅ **v1.0 MVP** — Phases 1-7 (shipped 2026-04-02) → [archive](milestones/v1.0-ROADMAP.md)
 
 ## Phases
 
-- [x] **Phase 1: Project Foundation + Google Places Search** - ESM project scaffold with billing guards, working Places search returning structured prospect data (completed 2026-03-28)
-- [ ] **Phase 2: Business Filter + Phone Normalization** - Core value filter (no website / Instagram-only) and Brazilian phone normalization verified before any send infrastructure is built
-- [ ] **Phase 3: Contact History + Deduplication** - Local JSON history keyed by `place_id` that prevents duplicate sends across runs
-- [x] **Phase 4: Message Template Rendering** - Fixed outreach template with variable substitution producing send-ready messages (completed 2026-03-30)
-- [x] **Phase 5: WhatsApp Send via Evolution API** - Primary channel sender with mandatory random delays and per-session caps to protect account health (completed 2026-03-30)
-- [x] **Phase 6: Email Send via Zoho SMTP** - Secondary channel sender with graceful skip when email is absent (completed 2026-03-31)
-- [x] **Phase 7: CLI Wiring + Operator UX** - Full pipeline orchestration with Commander.js entry point and per-contact status logging (completed 2026-04-01)
+<details>
+<summary>✅ v1.0 MVP (Phases 1-7) — SHIPPED 2026-04-02</summary>
+
+- [x] Phase 1: Project Foundation + Google Places Search (2/2 plans) — completed 2026-03-28
+- [x] Phase 2: Business Filter + Phone Normalization (2/2 plans) — completed 2026-03-28
+- [x] Phase 3: Contact History + Deduplication (2/2 plans) — completed 2026-03-29
+- [x] Phase 4: Message Template Rendering (2/2 plans) — completed 2026-03-30
+- [x] Phase 5: WhatsApp Send via Evolution API (2/2 plans) — completed 2026-03-30
+- [x] Phase 6: Email Send via Zoho SMTP (2/2 plans) — completed 2026-03-31
+- [x] Phase 7: CLI Wiring + Operator UX (2/2 plans) — completed 2026-04-01
+
+</details>
 
 ---
 
-## Phase Details
-
-### Phase 1: Project Foundation + Google Places Search
-
-**Goal**: A working Node.js ESM project that can search Google Places by city and category, return structured business data with correct field masking, and fail safely if credentials are missing or billing guards are not in place.
-
-**Depends on**: Nothing (first phase)
-
-**Requirements**: SRCH-01, SRCH-03
-
-**Success Criteria** (what must be TRUE):
-  1. Running `node bin/prospect.js --city "Sao Paulo" --category "restaurante"` returns a list of businesses with name, rating, phone, and email fields (email often null — that is expected)
-  2. A missing or invalid `GOOGLE_PLACES_API_KEY` in `.env` causes the process to exit immediately with a clear error message, never reaching the API call
-  3. Google Cloud Console shows a `$10` billing alert and a daily quota cap configured before any live API call is made
-  4. Requests to the Places API use a `FieldMask` restricted to `id,displayName,websiteUri,nationalPhoneNumber,rating` — confirmed by inspecting outgoing request headers in debug mode
-  5. Searching a large category (e.g., `restaurante` in a major city) returns more than 20 results by paginating through `nextPageToken` with a 2.5-second delay between pages
-
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 01-01-PLAN.md — Scaffold ESM project + Wave 0 test stubs (RED)
-- [x] 01-02-PLAN.md — Implement all source modules (GREEN — tests pass)
-
----
-
-### Phase 2: Business Filter + Phone Normalization
-
-**Goal**: A pure filter function that correctly identifies businesses without a real website (including Instagram-only and bio-link sites), and a phone normalization utility that converts any Brazilian number format to the E.164 format required by Evolution API — both verified with unit tests before any send infrastructure is built.
-
-**Depends on**: Phase 1
-
-**Requirements**: SRCH-02, WA-03
-
-**Success Criteria** (what must be TRUE):
-  1. A business with `websiteUri: null` is included in the filtered output
-  2. A business with `websiteUri: "instagram.com/business"` (no protocol), `"https://www.instagram.com/business"`, or `"https://linktr.ee/business"` is included in the filtered output — not treated as having a real website
-  3. A business with `websiteUri: "https://minhapadaria.com.br"` is excluded from the filtered output
-  4. The phone normalization function converts at minimum 10 Brazilian number format variants (including `+55 (11) 98765-4321`, `(11) 98765-4321`, `11987654321`, `5511987654321`) to the `5511XXXXXXXXX` format required by Evolution API
-  5. Numbers that fail normalization are logged with the raw value and skipped — they do not crash the pipeline
-
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 02-01-PLAN.md — TDD: filter + phone tests (RED) then implementation (GREEN)
-- [x] 02-02-PLAN.md — Wire filterBusinesses into fetch.js pipeline
-
----
-
-### Phase 3: Contact History + Deduplication
-
-**Goal**: A local JSON history file keyed by `place_id` that correctly gates sends — businesses already in history are skipped, history is written immediately after each confirmed send, and a crash mid-run does not corrupt the file.
-
-**Depends on**: Phase 2
-
-**Requirements**: HIST-01, HIST-02, HIST-03
-
-**Success Criteria** (what must be TRUE):
-  1. Running the same `--city` and `--category` query twice results in zero new send attempts on the second run — all previously-contacted businesses are filtered at the dedup stage
-  2. History lookup uses `place_id` as the primary key — a business with a slightly different name but the same `place_id` is still recognized as already-contacted
-  3. Interrupting a run with Ctrl+C after some sends does not corrupt or empty `data/history.json` — the file contains exactly the entries that were successfully recorded before the interrupt
-  4. History is loaded once into an in-memory Set at startup, not re-read on every send
-
-**Plans:** 1/2 plans executed
-
-Plans:
-- [x] 03-01-PLAN.md — TDD history.js: testes RED + implementacao GREEN (loadHistory, isDuplicate, recordSend)
-- [x] 03-02-PLAN.md — TDD dedup.js: stage de deduplicacao + .gitignore
-
----
-
-### Phase 4: Message Template Rendering
-
-**Goal**: A fixed outreach template file with variable placeholders that produces a complete, correctly-substituted message string for each prospect — verified before any integration with senders.
-
-**Depends on**: Phase 3
-
-**Requirements**: TMPL-01
-
-**Success Criteria** (what must be TRUE):
-  1. Given a prospect with `nome: "Padaria Central"`, `rating: "4.2"`, `categoria: "padaria"`, `cidade: "São Paulo"`, the rendered message contains all four substituted values and no unresolved `{{variable}}` placeholders
-  2. A prospect missing the `rating` field (null or undefined) renders without crashing — the placeholder resolves to a sensible fallback (e.g., empty string or "N/A")
-  3. The template file lives at `templates/outreach.txt` and can be edited by a non-developer without touching any JavaScript
-
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 04-01-PLAN.md — TDD RED: test stubs para renderTemplate + arquivo de template outreach.txt
-- [x] 04-02-PLAN.md — TDD GREEN: implementar renderTemplate + renderMessage pipeline stage
-
----
-
-### Phase 5: WhatsApp Send via Evolution API
-
-**Goal**: The primary outreach channel is live — the bot sends WhatsApp messages to normalized phone numbers via Evolution API, enforces random 3–8 second delays between sends, handles failures per-contact without aborting the run, and checks instance connection health at startup.
-
-**Depends on**: Phase 4
-
-**Requirements**: WA-01, WA-02
-
-**Success Criteria** (what must be TRUE):
-  1. A test run of 3–5 contacts results in WhatsApp messages being received by those numbers
-  2. The terminal shows a per-contact status line for each send attempt — `[WA sent]`, `[WA failed: reason]` — with no silent failures
-  3. A failure to send to one contact (e.g., number not on WhatsApp) does not stop the remaining contacts from being processed
-  4. The time between consecutive WhatsApp sends is random within the 3–8 second range — confirmed by observing timestamps in terminal output
-  5. Running the bot when the Evolution API instance is disconnected prints a clear error and exits before attempting any send — does not silently fail or send to a null endpoint
-
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 05-01-PLAN.md — TDD: testes RED + implementacao GREEN para evolution.js, sender.js, env.js expandido
-- [x] 05-02-PLAN.md — Wire pipeline completo em bin/prospect.js + verificacao humana
-
----
-
-### Phase 6: Email Send via Zoho SMTP
-
-**Goal**: The secondary outreach channel is live — the bot sends email via Zoho SMTP when an email address is present in the prospect data, skips silently and logs the skip when no email is available, and passes deliverability checks before any live campaign send.
-
-**Depends on**: Phase 5
-
-**Requirements**: EMAIL-01, EMAIL-02
-
-**Success Criteria** (what must be TRUE):
-  1. A prospect with an email address receives the outreach message at that address via Zoho SMTP
-  2. A prospect without an email address produces a `[email skipped: no address]` log line and the run continues normally — no error, no crash
-  3. SPF and DKIM pass for the sending domain verified via `mail-tester.com` before the first live send
-  4. The `From` header matches the authenticated Zoho account — Zoho does not reject the message as spoofing
-
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 06-01-PLAN.md — TDD: history.js channel-aware + zoho.js service + emailSender.js stage + testes
-- [x] 06-02-PLAN.md — Wire pipeline dual-channel em bin/prospect.js + verificacao humana
-
----
-
-### Phase 7: CLI Wiring + Operator UX
-
-**Goal**: All pipeline stages are wired together under a single Commander.js entry point — the operator runs one command, sees clear per-contact status for every outcome (sent, skipped, failed), and the entire run is resilient to individual contact failures.
-
-**Depends on**: Phase 6
-
-**Requirements**: OPS-01, OPS-02
-
-**Success Criteria** (what must be TRUE):
-  1. Running `node bin/prospect.js --city "Campinas" --category "academia"` executes the full pipeline end-to-end — search, filter, dedup, template, send WhatsApp, send email, log results
-  2. Every contact produces exactly one status line in the terminal showing: business name, channels attempted, and outcome — no contact is silently processed
-  3. Every skip includes an explicit reason in the log: `[SKIP already-contacted]`, `[SKIP has-website]`, `[SKIP no-phone]`
-  4. A network error or API failure on one contact is logged as `[failed: reason]` and the bot continues to the next contact without aborting the batch
-  5. Missing `--city` or `--category` args produce a clear usage error with an example command — the bot never reaches the API with incomplete input
-
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 07-01-PLAN.md — Commander.js migration + onSkip callbacks em filter e dedup
-- [x] 07-02-PLAN.md — Wire pipeline completo em bin/prospect.js + verificacao humana
-
----
-
-## Progress
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation + Google Places Search | 2/2 | Complete   | 2026-03-28 |
-| 2. Business Filter + Phone Normalization | 2/2 | Complete   | 2026-03-28 |
-| 3. Contact History + Deduplication | 1/2 | In Progress|  |
-| 4. Message Template Rendering | 2/2 | Complete   | 2026-03-30 |
-| 5. WhatsApp Send via Evolution API | 2/2 | Complete   | 2026-03-30 |
-| 6. Email Send via Zoho SMTP | 2/2 | Complete   | 2026-03-31 |
-| 7. CLI Wiring + Operator UX | 2/2 | Complete   | 2026-04-01 |
-
----
-
-## Requirement Coverage
-
-| Requirement | Phase | Description |
-|-------------|-------|-------------|
-| SRCH-01 | Phase 1 | Search via `--city` and `--category` CLI args |
-| SRCH-03 | Phase 1 | Extract name, rating, phone, email from results |
-| SRCH-02 | Phase 2 | Filter: no website OR Instagram/bio-link URL |
-| WA-03 | Phase 2 | Normalize Brazilian phones to E.164 for Evolution API |
-| HIST-01 | Phase 3 | Local deduplication history keyed by `place_id` |
-| HIST-02 | Phase 3 | Skip contacts already in history |
-| HIST-03 | Phase 3 | Write to history immediately after confirmed send |
-| TMPL-01 | Phase 4 | Substitute `{{nome}}`, `{{rating}}`, `{{categoria}}`, `{{cidade}}` |
-| WA-01 | Phase 5 | Send WhatsApp via Evolution API |
-| WA-02 | Phase 5 | Random 3-8 second delay between WhatsApp sends |
-| EMAIL-01 | Phase 6 | Send email via Zoho SMTP when address available |
-| EMAIL-02 | Phase 6 | Skip email silently when address absent |
-| OPS-01 | Phase 7 | Per-contact terminal status (name, channel, outcome) |
-| OPS-02 | Phase 7 | Continue on per-contact error — do not abort batch |
-
-**Coverage: 14/14 v1 requirements mapped. No orphans.**
-
----
-
-## Design Constraints Embedded in Phases
-
-These are not phases — they are constraints the implementation must satisfy. They are listed here so plan-phase picks them up.
-
-| Constraint | Enforced By | Phase |
-|------------|-------------|-------|
-| `"type": "module"` in `package.json` from day one | `package.json` scaffold | Phase 1 |
-| `.env` for all credentials, `.gitignore` blocks commit | Project scaffold | Phase 1 |
-| Google Cloud billing alert ($10) + daily quota cap | Pre-flight setup check | Phase 1 |
-| Field mask on every Places request | `services/places.js` | Phase 1 |
-| `nextPageToken` requires 2.5s sleep before use | `stages/fetch.js` | Phase 1 |
-| Phone normalization exists before WhatsApp sender | `src/utils/phone.js` | Phase 2 |
-| Deduplication history exists before any live send | `src/history.js` | Phase 3 |
-| History written per-send, not at batch end | `src/history.js` | Phase 3 |
-| WhatsApp send delay is random 3-8s (never fixed interval) | `stages/sender.js` | Phase 5 |
-| No bulk `/chat/whatsappNumbers` validation calls | `services/evolution.js` | Phase 5 |
-| Evolution API instance health check at startup | `services/evolution.js` | Phase 5 |
-| SPF/DKIM verified before first live email send | Operational pre-flight | Phase 6 |
-
----
-
-*Roadmap created: 2026-03-28*
-*Last updated: 2026-04-01 after Phase 7 planning*
+*Next milestone: `/gsd:new-milestone` after `/clear`*
+*Archive: `.planning/milestones/v1.0-ROADMAP.md`*
+*Created: 2026-03-28 | Shipped: 2026-04-02*
