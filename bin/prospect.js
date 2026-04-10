@@ -1,16 +1,24 @@
 import 'dotenv/config'
 import { validateEnv } from '../src/utils/env.js'
 import { checkConnection } from '../src/services/evolution.js'
-import { sendMessage, waitForTextReply, waitForApproval, waitForMedia, downloadTelegramFile, initUpdatesOffset } from '../src/services/telegram.js'
+import {
+  sendMessage, waitForTextReply, waitForApproval, initUpdatesOffset
+} from '../src/services/telegram.js'
 import { fetchProspects } from '../src/stages/fetch.js'
 import { loadHistory, isDuplicate } from '../src/history.js'
 import { dedupProspects } from '../src/stages/dedup.js'
 import { renderMessage } from '../src/stages/render.js'
-import { sendWhatsApp, sendWhatsAppMedia } from '../src/stages/sender.js'
+import { sendWhatsApp } from '../src/stages/sender.js'
+import { readFileSync } from 'node:fs'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const BATCH_SIZE = 10
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const TEMPLATE_PATH = join(__dirname, '..', 'templates', 'outreach.txt')
+const SESSION_TARGET = 100
+const NICHES_COUNT = 6
 
-// 1. Validate environment
+// --- Validate env ---
 let env
 try {
   env = validateEnv()
@@ -19,281 +27,218 @@ try {
   process.exit(1)
 }
 
-// 2. Health check Evolution Go instance
+// --- Health check ---
 try {
-  const status = await checkConnection({
-    baseUrl: env.evolutionApiUrl,
-    apiKey: env.evolutionApiKey
-  })
-  if (!status.data?.Connected || !status.data?.LoggedIn) {
-    console.error('Error: Evolution Go instance not connected. Reconnect via QR code before running.')
-    process.exit(1)
-  }
-} catch (err) {
+  const status = await checkConnection({ baseUrl: env.evolutionApiUrl, apiKey: env.evolutionApiKey })
+  if (!status.data?.Connected || !status.data?.LoggedIn) throw new Error('not connected')
+} catch {
   console.error('Error: Evolution Go instance not connected. Reconnect via QR code before running.')
   process.exit(1)
 }
 
-// 3. Main prospecting loop
+const waConfig = { baseUrl: env.evolutionApiUrl, apiKey: env.evolutionApiKey }
 let offset = await initUpdatesOffset(env.telegramBotToken)
+loadHistory()
 
-const waConfig = {
-  baseUrl: env.evolutionApiUrl,
-  apiKey: env.evolutionApiKey
+// ─────────────────────────────────────────────
+// SETUP PHASE
+// ─────────────────────────────────────────────
+
+await sendMessage(
+  env.telegramBotToken, env.telegramChatId,
+  `🚀 *ProspecTeam — Nova Sessão*\n\n🎯 Meta: *${SESSION_TARGET} contatos*\n\n📍 Qual *cidade* deseja prospectar?`
+)
+
+// 1. City
+const cityReply = await waitForTextReply(env.telegramBotToken, env.telegramChatId, offset)
+const city = cityReply.text
+offset = cityReply.nextOffset
+
+// 2. Niches
+await sendMessage(
+  env.telegramBotToken, env.telegramChatId,
+  `✅ Cidade: *${city}*\n\n🏷️ Defina *${NICHES_COUNT} nichos* (um por mensagem):\n\n*Nicho 1/${NICHES_COUNT}:*`
+)
+
+const niches = []
+for (let i = 1; i <= NICHES_COUNT; i++) {
+  const reply = await waitForTextReply(env.telegramBotToken, env.telegramChatId, offset)
+  niches.push(reply.text)
+  offset = reply.nextOffset
+
+  if (i < NICHES_COUNT) {
+    await sendMessage(
+      env.telegramBotToken, env.telegramChatId,
+      `✅ _${reply.text}_ registrado!\n\n*Nicho ${i + 1}/${NICHES_COUNT}:*`
+    )
+  } else {
+    await sendMessage(
+      env.telegramBotToken, env.telegramChatId,
+      `✅ _${reply.text}_ registrado!\n\n6 nichos definidos.`
+    )
+  }
 }
 
-await sendMessage(env.telegramBotToken, env.telegramChatId, '👋 ProspecTeam iniciado!\n\n📍 Qual *cidade* deseja prospectar?')
-
+// 3. Template approval loop
+let template = readFileSync(TEMPLATE_PATH, 'utf8')
 while (true) {
-  // --- Ask city ---
-  let city
-  try {
-    const reply = await waitForTextReply(env.telegramBotToken, env.telegramChatId, offset)
-    city = reply.text
-    offset = reply.nextOffset
-  } catch (err) {
-    console.error(`Timeout aguardando cidade: ${err.message}`)
-    process.exit(1)
+  const preview = [
+    `📝 *Template da sessão:*`,
+    `\`\`\``,
+    template,
+    `\`\`\``,
+    `_Variáveis disponíveis: {{nome}}, {{cidade}}, {{categoria}}, {{rating}}_`
+  ].join('\n')
+
+  const templateMsg = await sendMessage(
+    env.telegramBotToken, env.telegramChatId,
+    preview,
+    {
+      inline_keyboard: [[
+        { text: '✅ Aprovar', callback_data: 'approve' },
+        { text: '✏️ Editar', callback_data: 'edit' }
+      ]]
+    }
+  )
+
+  const templateResult = await waitForApproval(
+    env.telegramBotToken, env.telegramChatId,
+    templateMsg.message_id, offset
+  )
+  offset = templateResult.nextOffset
+
+  if (templateResult.decision === 'approve') break
+
+  await sendMessage(env.telegramBotToken, env.telegramChatId, '✏️ Envie o novo texto do template:')
+  const editReply = await waitForTextReply(env.telegramBotToken, env.telegramChatId, offset)
+  template = editReply.text
+  offset = editReply.nextOffset
+}
+
+// 4. Session summary + confirm start
+const nichesList = niches.map((n, i) => `${i + 1}. ${n}`).join('\n')
+const summaryMsg = await sendMessage(
+  env.telegramBotToken, env.telegramChatId,
+  [
+    `✅ *Sessão configurada!*`,
+    ``,
+    `📍 Cidade: *${city}*`,
+    `🏷️ Nichos:\n${nichesList}`,
+    `📝 Template: aprovado`,
+    `🎯 Meta: *${SESSION_TARGET} contatos*`,
+    ``,
+    `Tudo certo — iniciar?`
+  ].join('\n'),
+  {
+    inline_keyboard: [[
+      { text: '🚀 Iniciar', callback_data: 'start' },
+      { text: '❌ Cancelar', callback_data: 'cancel' }
+    ]]
   }
+)
 
-  await sendMessage(env.telegramBotToken, env.telegramChatId, `✅ Cidade: *${city}*\n\n🏷️ Qual *nicho* deseja prospectar?`)
+const startResult = await waitForApproval(
+  env.telegramBotToken, env.telegramChatId,
+  summaryMsg.message_id, offset
+)
+offset = startResult.nextOffset
 
-  // --- Ask category ---
-  let category
-  try {
-    const reply = await waitForTextReply(env.telegramBotToken, env.telegramChatId, offset)
-    category = reply.text
-    offset = reply.nextOffset
-  } catch (err) {
-    console.error(`Timeout aguardando nicho: ${err.message}`)
-    process.exit(1)
-  }
+if (startResult.decision === 'cancel') {
+  await sendMessage(env.telegramBotToken, env.telegramChatId, '❌ Sessão cancelada.')
+  process.exit(0)
+}
 
-  await sendMessage(env.telegramBotToken, env.telegramChatId, `✅ Nicho: *${category}*\n\n🔍 Buscando prospects...`)
-  console.log(`Cidade: ${city} | Nicho: ${category}`)
+// ─────────────────────────────────────────────
+// EXECUTION PHASE
+// ─────────────────────────────────────────────
 
-  // 4. Fetch prospects
+await sendMessage(
+  env.telegramBotToken, env.telegramChatId,
+  `🔄 Iniciando prospecção automática...\n_Você receberá updates a cada 10 enviados._`
+)
+console.log(`\n[SESSION] cidade=${city} | nichos=${niches.join(', ')} | meta=${SESSION_TARGET}`)
+
+let totalSent = 0
+let totalSkipped = 0
+
+for (let i = 0; i < niches.length; i++) {
+  if (totalSent >= SESSION_TARGET) break
+
+  const niche = niches[i]
+  await sendMessage(
+    env.telegramBotToken, env.telegramChatId,
+    `🔍 Nicho *${i + 1}/${NICHES_COUNT}*: _${niche}_ — buscando...`
+  )
+  console.log(`\n[NICHE ${i + 1}/${NICHES_COUNT}] ${niche}`)
+
   let prospects
   try {
     prospects = await fetchProspects({
-      city, category, apiKey: env.apiKey,
-      onSkip: (prospect, reason, url) => {
-        console.log(`[SKIP ${reason}: ${url}] ${prospect.name}`)
-      }
+      city, category: niche, apiKey: env.apiKey,
+      onSkip: (p, reason, url) => console.log(`[SKIP ${reason}: ${url ?? ''}] ${p.name}`)
     })
   } catch (err) {
-    console.error(`Error fetching prospects: ${err.message}`)
-    await sendMessage(env.telegramBotToken, env.telegramChatId, `❌ Erro ao buscar prospects: ${err.message}`)
-    process.exit(1)
+    await sendMessage(
+      env.telegramBotToken, env.telegramChatId,
+      `❌ Erro buscando *${niche}*: ${err.message}`
+    )
+    console.error(`[ERROR] ${niche}: ${err.message}`)
+    continue
   }
 
-  // 5. Load history and dedup
-  loadHistory()
-  prospects = dedupProspects(prospects, (prospect, reason, channels) => {
-    console.log(`[SKIP ${reason}: ${channels.join('+')}] ${prospect.name}`)
+  prospects = dedupProspects(prospects, (p, reason, channels) => {
+    console.log(`[SKIP ${reason}: ${channels.join('+')}] ${p.name}`)
   })
 
-  prospects = prospects.slice(0, BATCH_SIZE)
+  await sendMessage(
+    env.telegramBotToken, env.telegramChatId,
+    `📋 *${prospects.length}* prospects novos encontrados para _${niche}_`
+  )
 
-  if (prospects.length === 0) {
-    await sendMessage(env.telegramBotToken, env.telegramChatId, '⚠️ Nenhum prospect novo encontrado.')
-  } else {
-    await sendMessage(
-      env.telegramBotToken,
-      env.telegramChatId,
-      `📋 *${prospects.length} prospects encontrados.* Revisando um a um...`
-    )
+  for (const prospect of prospects) {
+    if (totalSent >= SESSION_TARGET) break
+    if (!prospect.phone) { totalSkipped++; continue }
+    if (isDuplicate(prospect.placeId, 'wa')) { totalSkipped++; continue }
 
-    // 6. Per-prospect approval loop
-    let sent = 0
-    let skipped = 0
+    const message = renderMessage(prospect, { cidade: city, categoria: niche }, template)
+    const result = await sendWhatsApp(prospect, message, waConfig)
 
-    for (const prospect of prospects) {
-      if (!prospect.phone) {
-        console.log(`[SKIP wa: no-phone] ${prospect.name}`)
-        await sendMessage(env.telegramBotToken, env.telegramChatId, `⚠️ *${prospect.name}* — sem telefone, pulando.`)
-        skipped++
-        continue
-      }
+    if (result.ok) {
+      totalSent++
+      console.log(`[WA sent] ${prospect.name} (${totalSent}/${SESSION_TARGET})`)
 
-      if (isDuplicate(prospect.placeId, 'wa')) {
-        skipped++
-        continue
-      }
-
-      let waMessage = renderMessage(prospect, { cidade: city, categoria: category })
-      const phone = prospect.phone ?? '—'
-      const rating = prospect.rating ? `⭐ ${prospect.rating}` : ''
-
-      // --- Approval loop (supports editing) ---
-      let sendApproved = false
-      while (true) {
-        const preview = [
-          `👤 *${prospect.name}*`,
-          `☎️ ${phone}  ${rating}`.trim(),
-          '',
-          `📨 *Mensagem a ser enviada:*`,
-          `\`\`\``,
-          waMessage,
-          `\`\`\``
-        ].join('\n')
-
-        let approvalMsg
-        try {
-          approvalMsg = await sendMessage(
-            env.telegramBotToken,
-            env.telegramChatId,
-            preview,
-            {
-              inline_keyboard: [[
-                { text: '✅ Enviar', callback_data: 'approve' },
-                { text: '✏️ Editar', callback_data: 'edit' },
-                { text: '❌ Pular', callback_data: 'cancel' }
-              ]]
-            }
-          )
-        } catch (err) {
-          console.error(`Erro ao enviar preview no Telegram: ${err.message}`)
-          break
-        }
-
-        let decision
-        try {
-          const result = await waitForApproval(env.telegramBotToken, env.telegramChatId, approvalMsg.message_id, offset)
-          decision = result.decision
-          offset = result.nextOffset
-        } catch (err) {
-          console.error(`Timeout aguardando resposta: ${err.message}`)
-          await sendMessage(env.telegramBotToken, env.telegramChatId, '⏱️ Timeout — encerrando sessão.')
-          process.exit(1)
-        }
-
-        if (decision === 'cancel') {
-          console.log(`[SKIP manual] ${prospect.name}`)
-          skipped++
-          break
-        }
-
-        if (decision === 'edit') {
-          await sendMessage(env.telegramBotToken, env.telegramChatId, '✏️ Envie o novo texto da mensagem:')
-          try {
-            const textReply = await waitForTextReply(env.telegramBotToken, env.telegramChatId, offset)
-            waMessage = textReply.text
-            offset = textReply.nextOffset
-          } catch (err) {
-            await sendMessage(env.telegramBotToken, env.telegramChatId, '⏱️ Timeout — encerrando sessão.')
-            process.exit(1)
-          }
-          continue
-        }
-
-        // decision === 'approve'
-        sendApproved = true
-        break
-      }
-
-      if (!sendApproved) continue
-
-      // --- Attachment flow ---
-      let mediaData = null
-      let attachMsg
-      try {
-        attachMsg = await sendMessage(
-          env.telegramBotToken,
-          env.telegramChatId,
-          '📎 Deseja enviar um anexo junto com a mensagem?',
-          {
-            inline_keyboard: [[
-              { text: '📹 Vídeo', callback_data: 'attach_video' },
-              { text: '🖼️ Imagem', callback_data: 'attach_image' },
-              { text: '📄 Documento', callback_data: 'attach_document' },
-              { text: '❌ Não', callback_data: 'attach_none' }
-            ]]
-          }
+      if (totalSent % 10 === 0) {
+        await sendMessage(
+          env.telegramBotToken, env.telegramChatId,
+          `📊 Progresso: *${totalSent}/${SESSION_TARGET}* enviados`
         )
-      } catch (err) {
-        console.error(`Erro ao enviar pergunta de anexo: ${err.message}`)
       }
-
-      if (attachMsg) {
-        try {
-          const attachResult = await waitForApproval(env.telegramBotToken, env.telegramChatId, attachMsg.message_id, offset)
-          offset = attachResult.nextOffset
-
-          if (attachResult.decision !== 'attach_none') {
-            await sendMessage(env.telegramBotToken, env.telegramChatId, '📤 Envie o arquivo agora:')
-            const mediaReply = await waitForMedia(env.telegramBotToken, env.telegramChatId, offset)
-            offset = mediaReply.nextOffset
-            const { buffer, filePath } = await downloadTelegramFile(env.telegramBotToken, mediaReply.fileId)
-            mediaData = { buffer, filePath, fileName: mediaReply.fileName }
-          }
-        } catch (err) {
-          await sendMessage(env.telegramBotToken, env.telegramChatId, `⚠️ Nenhum arquivo recebido, enviando só o texto.`)
-        }
-      }
-
-      // --- Send ---
-      const result = await sendWhatsApp(prospect, waMessage, waConfig)
-      if (result.ok) {
-        console.log(`[WA sent] ${prospect.name}`)
-        await sendMessage(env.telegramBotToken, env.telegramChatId, `✅ Mensagem enviada para *${prospect.name}*`)
-        sent++
-
-        if (mediaData) {
-          const mediaResult = await sendWhatsAppMedia(prospect, mediaData, waConfig)
-          if (mediaResult.ok) {
-            await sendMessage(env.telegramBotToken, env.telegramChatId, `📎 Anexo enviado para *${prospect.name}*`)
-          } else {
-            await sendMessage(env.telegramBotToken, env.telegramChatId, `⚠️ Texto enviado, mas falha no anexo: ${mediaResult.reason}`)
-          }
-        }
-      } else {
-        console.log(`[WA failed: ${result.reason}] ${prospect.name}`)
-        await sendMessage(env.telegramBotToken, env.telegramChatId, `❌ Falha ao enviar para *${prospect.name}*: ${result.reason}`)
-      }
+    } else {
+      totalSkipped++
+      console.log(`[WA failed: ${result.reason}] ${prospect.name}`)
     }
-
-    // 7. Summary
-    const summary = `📊 *Sessão concluída*\n✅ Enviados: ${sent}\n⏭️ Pulados: ${skipped}`
-    await sendMessage(env.telegramBotToken, env.telegramChatId, summary)
-    console.log(`\nConcluído — enviados: ${sent}, pulados: ${skipped}`)
   }
-
-  // 8. Ask if user wants another prospecting session
-  let newSessionMsg
-  try {
-    newSessionMsg = await sendMessage(
-      env.telegramBotToken,
-      env.telegramChatId,
-      '🔄 Deseja iniciar uma nova prospecção?',
-      {
-        inline_keyboard: [[
-          { text: '✅ Sim', callback_data: 'new_session_yes' },
-          { text: '❌ Não', callback_data: 'new_session_no' }
-        ]]
-      }
-    )
-  } catch (err) {
-    console.error(`Erro ao perguntar nova sessão: ${err.message}`)
-    process.exit(0)
-  }
-
-  let newSessionDecision
-  try {
-    const result = await waitForApproval(env.telegramBotToken, env.telegramChatId, newSessionMsg.message_id, offset, 10 * 60 * 1000)
-    newSessionDecision = result.decision
-    offset = result.nextOffset
-  } catch (err) {
-    await sendMessage(env.telegramBotToken, env.telegramChatId, '⏱️ Tempo esgotado — encerrando. Até logo!')
-    process.exit(0)
-  }
-
-  if (newSessionDecision === 'new_session_no') {
-    await sendMessage(env.telegramBotToken, env.telegramChatId, '👋 Até logo!')
-    console.log('Usuário encerrou o bot.')
-    process.exit(0)
-  }
-
-  // User said yes — ask for city again at the top of the loop
-  await sendMessage(env.telegramBotToken, env.telegramChatId, '📍 Qual *cidade* deseja prospectar?')
 }
+
+// ─────────────────────────────────────────────
+// FINAL SUMMARY
+// ─────────────────────────────────────────────
+
+const goalLine = totalSent >= SESSION_TARGET
+  ? `🎯 *Meta atingida!*`
+  : `⚠️ Nichos esgotados antes da meta`
+
+await sendMessage(
+  env.telegramBotToken, env.telegramChatId,
+  [
+    goalLine,
+    ``,
+    `📊 *Resumo da sessão*`,
+    `✅ Enviados: *${totalSent}/${SESSION_TARGET}*`,
+    `⏭️ Pulados: ${totalSkipped}`,
+    `📍 Cidade: ${city}`,
+    `🏷️ Nichos: ${niches.join(', ')}`
+  ].join('\n')
+)
+
+console.log(`\n[DONE] enviados=${totalSent}/${SESSION_TARGET} pulados=${totalSkipped}`)
