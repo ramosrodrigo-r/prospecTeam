@@ -29,14 +29,13 @@ describe('checkConnection', () => {
   it('faz fetch para a URL correta com header apikey', async () => {
     const baseUrl = 'http://localhost:8080'
     const apiKey = 'test-key'
-    const instance = 'test-instance'
-    await checkConnection({ baseUrl, apiKey, instance })
-    assert.equal(capturedUrl, `${baseUrl}/instance/connectionState/${instance}`)
+    await checkConnection({ baseUrl, apiKey })
+    assert.equal(capturedUrl, `${baseUrl}/instance/status`)
     assert.equal(capturedOpts.headers.apikey, apiKey)
   })
 
   it('retorna JSON parseado quando response.ok === true', async () => {
-    const result = await checkConnection({ baseUrl: 'http://localhost:8080', apiKey: 'k', instance: 'i' })
+    const result = await checkConnection({ baseUrl: 'http://localhost:8080', apiKey: 'k' })
     assert.deepStrictEqual(result, { instance: 'connected' })
   })
 
@@ -47,7 +46,7 @@ describe('checkConnection', () => {
       text: async () => 'Unauthorized'
     })
     await assert.rejects(
-      () => checkConnection({ baseUrl: 'http://localhost:8080', apiKey: 'k', instance: 'i' }),
+      () => checkConnection({ baseUrl: 'http://localhost:8080', apiKey: 'k' }),
       (err) => {
         assert.ok(err.message.includes('401'))
         return true
@@ -61,7 +60,7 @@ describe('checkConnection', () => {
       capturedSignal = opts.signal
       return { ok: true, json: async () => ({}), text: async () => '' }
     }
-    await checkConnection({ baseUrl: 'http://localhost:8080', apiKey: 'k', instance: 'i' })
+    await checkConnection({ baseUrl: 'http://localhost:8080', apiKey: 'k' })
     assert.ok(capturedSignal instanceof AbortSignal, 'signal deve ser uma instancia de AbortSignal')
   })
 
@@ -73,7 +72,7 @@ describe('checkConnection', () => {
       originalClearTimeout(id)
     }
     try {
-      await checkConnection({ baseUrl: 'http://localhost:8080', apiKey: 'k', instance: 'i' })
+      await checkConnection({ baseUrl: 'http://localhost:8080', apiKey: 'k' })
       assert.ok(clearTimeoutCalled, 'clearTimeout deve ter sido chamado')
     } finally {
       globalThis.clearTimeout = originalClearTimeout
@@ -108,11 +107,10 @@ describe('sendTextMessage', () => {
   it('faz POST para a URL correta com headers corretos e body', async () => {
     const baseUrl = 'http://localhost:8080'
     const apiKey = 'test-key'
-    const instance = 'test-instance'
     const number = '5511999998888'
     const text = 'Hello, World!'
-    await sendTextMessage({ baseUrl, apiKey, instance, number, text })
-    assert.equal(capturedUrl, `${baseUrl}/message/sendText/${instance}`)
+    await sendTextMessage({ baseUrl, apiKey, number, text })
+    assert.equal(capturedUrl, `${baseUrl}/send/text`)
     assert.equal(capturedOpts.method, 'POST')
     assert.equal(capturedOpts.headers['Content-Type'], 'application/json')
     assert.equal(capturedOpts.headers.apikey, apiKey)
@@ -125,7 +123,6 @@ describe('sendTextMessage', () => {
     const result = await sendTextMessage({
       baseUrl: 'http://localhost:8080',
       apiKey: 'k',
-      instance: 'i',
       number: '5511999998888',
       text: 'test'
     })
@@ -139,7 +136,7 @@ describe('sendTextMessage', () => {
       text: async () => 'Internal Server Error'
     })
     await assert.rejects(
-      () => sendTextMessage({ baseUrl: 'http://localhost:8080', apiKey: 'k', instance: 'i', number: 'n', text: 't' }),
+      () => sendTextMessage({ baseUrl: 'http://localhost:8080', apiKey: 'k', number: 'n', text: 't' }),
       (err) => {
         assert.ok(err.message.includes('500'))
         return true

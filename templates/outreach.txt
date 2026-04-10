@@ -1,8 +1,9 @@
-Ola, {{nome}}!
+Oi, {{nome}}!
 
-Vi que o {{categoria}} de voces ainda nao tem site proprio.
-Nosso time pode criar um site profissional para voces em ate 5 dias.
+Vi que a {{nome}} ainda não tem site próprio.
 
-{{nome}} tem avaliacao {{rating}} no Google — um site ajudaria a atrair ainda mais clientes em {{cidade}}.
+Somos a Lagostinha Hub — criamos sites profissionais para negócios de {{categoria}} em até 5 dias.
 
-Posso te mandar mais detalhes?
+Você tem {{rating}} estrelas no Google em {{cidade}} — um site ajudaria a converter esse reconhecimento em ainda mais clientes.
+
+Quer ver um exemplo do que faríamos pra vocês?

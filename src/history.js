@@ -42,3 +42,4 @@ export function recordSend(placeId, channel) {
   writeFileSync(HISTORY_TMP, JSON.stringify(obj, null, 2), 'utf8')
   renameSync(HISTORY_TMP, HISTORY_FILE)
 }
+

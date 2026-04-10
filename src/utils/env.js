@@ -3,19 +3,15 @@ export function validateEnv() {
     apiKey:            process.env.GOOGLE_PLACES_API_KEY,
     evolutionApiUrl:   process.env.EVOLUTION_API_URL,
     evolutionApiKey:   process.env.EVOLUTION_API_KEY,
-    evolutionInstance: process.env.EVOLUTION_INSTANCE,
-    zohoSmtpUser:     process.env.ZOHO_SMTP_USER,
-    zohoSmtpPass:     process.env.ZOHO_SMTP_PASS,
-    emailSubject:     process.env.EMAIL_SUBJECT
+    telegramBotToken:  process.env.TELEGRAM_BOT_TOKEN,
+    telegramChatId:    process.env.TELEGRAM_CHAT_ID,
   }
   const envNames = {
     apiKey:            'GOOGLE_PLACES_API_KEY',
     evolutionApiUrl:   'EVOLUTION_API_URL',
     evolutionApiKey:   'EVOLUTION_API_KEY',
-    evolutionInstance: 'EVOLUTION_INSTANCE',
-    zohoSmtpUser:     'ZOHO_SMTP_USER',
-    zohoSmtpPass:     'ZOHO_SMTP_PASS',
-    emailSubject:     'EMAIL_SUBJECT'
+    telegramBotToken:  'TELEGRAM_BOT_TOKEN',
+    telegramChatId:    'TELEGRAM_CHAT_ID',
   }
   for (const [key, value] of Object.entries(required)) {
     if (!value) {

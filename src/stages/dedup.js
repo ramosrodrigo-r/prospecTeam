@@ -2,10 +2,8 @@ import { isDuplicate } from '../history.js'
 
 export function dedupProspects(prospects, onSkip) {
   return prospects.filter(p => {
-    const waDone = isDuplicate(p.placeId, 'wa')
-    const emailDone = isDuplicate(p.placeId, 'email')
-    if (waDone && emailDone) {
-      if (onSkip) onSkip(p, 'already-contacted', ['wa', 'email'])
+    if (isDuplicate(p.placeId, 'wa')) {
+      if (onSkip) onSkip(p, 'already-contacted', ['wa'])
       return false
     }
     return true
