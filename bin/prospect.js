@@ -17,7 +17,42 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const TEMPLATE_PATH = join(__dirname, '..', 'templates', 'outreach.txt')
 const SESSION_TARGET = 100
-const NICHES_COUNT = 6
+
+const SUGGESTED_NICHES = [
+  'Restaurantes e lanchonetes',
+  'Salões de beleza e barbearias',
+  'Academias e personal trainers',
+  'Clínicas odontológicas',
+  'Clínicas de estética',
+  'Consultórios médicos',
+  'Advocacias e escritórios jurídicos',
+  'Imobiliárias e corretores',
+  'Petshops e veterinárias',
+  'Escolas de idiomas',
+  'Escolas de música e artes',
+  'Oficinas mecânicas e auto peças',
+  'Lojas de roupa e calçados',
+  'Padarias e confeitarias',
+  'Fotógrafos e estúdios',
+  'Psicólogos e terapeutas',
+  'Hotéis e pousadas',
+  'Eventos e espaços para festas',
+  'Arquitetos e designers de interiores',
+  'Contabilidades e consultorias',
+]
+
+// Escapa caracteres especiais do Markdown v1 do Telegram em conteúdo fornecido pelo usuário
+function esc(text) {
+  return String(text).replace(/([_*`[])/g, '\\$1')
+}
+
+// Parseia uma string de números separados por vírgula/espaço em índices válidos (1-based → 0-based)
+function parseNicheSelection(input, max) {
+  const nums = input.split(/[\s,]+/).map(s => parseInt(s, 10)).filter(n => !isNaN(n))
+  const unique = [...new Set(nums)]
+  const valid = unique.filter(n => n >= 1 && n <= max)
+  return valid.map(n => n - 1) // retorna índices 0-based
+}
 
 // ── Env ──────────────────────────────────────────────────────────────────────
 let env
@@ -47,6 +82,8 @@ loadHistory()
 // SETUP DA SESSÃO
 // ─────────────────────────────────────────────────────────────────────────────
 
+try {
+
 await sendMessage(
   env.telegramBotToken, env.telegramChatId,
   `🚀 *ProspecTeam — Nova Sessão*\n\n🎯 Meta: *${SESSION_TARGET} contatos*\n\n📍 Qual *cidade* deseja prospectar?`
@@ -58,27 +95,41 @@ offset = cityReply.nextOffset
 
 await sendMessage(
   env.telegramBotToken, env.telegramChatId,
-  `✅ Cidade: *${city}*\n\n🏷️ Defina os *${NICHES_COUNT} nichos* da sessão (um por mensagem):\n\n*Nicho 1/${NICHES_COUNT}:*`
+  `✅ Cidade: *${esc(city)}*`
 )
 
-const niches = []
-for (let i = 1; i <= NICHES_COUNT; i++) {
-  const reply = await waitForTextReply(env.telegramBotToken, env.telegramChatId, offset)
-  niches.push(reply.text)
-  offset = reply.nextOffset
+// ── Seleção de nichos via lista ───────────────────────────────────────────────
+const nicheListText = SUGGESTED_NICHES.map((n, i) => `${i + 1}. ${n}`).join('\n')
 
-  if (i < NICHES_COUNT) {
+await sendMessage(
+  env.telegramBotToken, env.telegramChatId,
+  `🏷️ *Selecione os nichos da sessão:*\n\n${nicheListText}\n\nResponda com os *números* desejados (ex: \`1 4 7 15\`)`
+)
+
+let niches = []
+while (niches.length === 0) {
+  const selReply = await waitForTextReply(env.telegramBotToken, env.telegramChatId, offset)
+  offset = selReply.nextOffset
+  const indices = parseNicheSelection(selReply.text, SUGGESTED_NICHES.length)
+  if (indices.length === 0) {
     await sendMessage(
       env.telegramBotToken, env.telegramChatId,
-      `✅ _${reply.text}_ adicionado!\n\n*Nicho ${i + 1}/${NICHES_COUNT}:*`
+      `⚠️ Nenhum número válido reconhecido. Envie os números entre 1 e ${SUGGESTED_NICHES.length} (ex: \`1 4 7\`)`
     )
+    continue
   }
+  niches = indices.map(i => SUGGESTED_NICHES[i])
 }
 
-const nichesList = niches.map((n, i) => `${i + 1}. ${n}`).join('\n')
+await sendMessage(
+  env.telegramBotToken, env.telegramChatId,
+  `⏳ Preparando sessão...`
+)
+
+const nichesList = niches.map((n, i) => `${i + 1}. ${esc(n)}`).join('\n')
 const confirmMsg = await sendMessage(
   env.telegramBotToken, env.telegramChatId,
-  `📋 *Sessão configurada:*\n\n📍 Cidade: *${city}*\n🏷️ Nichos:\n${nichesList}\n\n🎯 Meta: *${SESSION_TARGET} contatos*\n\nConfirmar e iniciar?`,
+  `📋 *Sessão configurada:*\n\n📍 Cidade: *${esc(city)}*\n🏷️ Nichos:\n${nichesList}\n\n🎯 Meta: *${SESSION_TARGET} contatos*\n\nConfirmar e iniciar?`,
   {
     inline_keyboard: [[
       { text: '🚀 Iniciar', callback_data: 'start' },
@@ -110,11 +161,11 @@ for (let i = 0; i < niches.length; i++) {
   if (totalSent >= SESSION_TARGET) break
 
   const niche = niches[i]
-  console.log(`\n[NICHO ${i + 1}/${NICHES_COUNT}] ${niche}`)
+  console.log(`\n[NICHO ${i + 1}/${niches.length}] ${niche}`)
 
   await sendMessage(
     env.telegramBotToken, env.telegramChatId,
-    `━━━━━━━━━━━━━━━━━━\n🏷️ *Nicho ${i + 1}/${NICHES_COUNT}: ${niche}*\n\nRevisão antes de iniciar:`
+    `━━━━━━━━━━━━━━━━━━\n🏷️ *Nicho ${i + 1}/${niches.length}: ${esc(niche)}*\n\nRevisão antes de iniciar:`
   )
 
   // ── Aprovação do template ────────────────────────────────────────────────
@@ -177,7 +228,7 @@ for (let i = 0; i < niches.length; i++) {
       offset = mediaReply.nextOffset
       const { buffer, filePath } = await downloadTelegramFile(env.telegramBotToken, mediaReply.fileId)
       nicheMedia = { buffer, filePath, fileName: mediaReply.fileName }
-      await sendMessage(env.telegramBotToken, env.telegramChatId, `✅ Arquivo recebido: _${mediaReply.fileName}_`)
+      await sendMessage(env.telegramBotToken, env.telegramChatId, `✅ Arquivo recebido: _${esc(mediaReply.fileName)}_`)
     } catch (err) {
       await sendMessage(env.telegramBotToken, env.telegramChatId, `⚠️ Falha ao receber arquivo: ${err.message}\nContinuando sem anexo.`)
     }
@@ -186,7 +237,7 @@ for (let i = 0; i < niches.length; i++) {
   // ── Busca e dedup ─────────────────────────────────────────────────────────
   await sendMessage(
     env.telegramBotToken, env.telegramChatId,
-    `🔍 Buscando prospects para *${niche}* em *${city}*...`
+    `🔍 Buscando prospects para *${esc(niche)}* em *${esc(city)}*...`
   )
 
   let prospects
@@ -198,7 +249,7 @@ for (let i = 0; i < niches.length; i++) {
   } catch (err) {
     await sendMessage(
       env.telegramBotToken, env.telegramChatId,
-      `❌ Erro ao buscar *${niche}*: ${err.message}\nPulando para o próximo nicho.`
+      `❌ Erro ao buscar *${esc(niche)}*: ${esc(err.message)}\nPulando para o próximo nicho.`
     )
     console.error(`[ERROR] ${niche}: ${err.message}`)
     continue
@@ -264,7 +315,7 @@ for (let i = 0; i < niches.length; i++) {
 
   await sendMessage(
     env.telegramBotToken, env.telegramChatId,
-    `✅ Nicho *${niche}* concluído — ${totalSent}/${SESSION_TARGET} enviados no total`
+    `✅ Nicho *${esc(niche)}* concluído \(${i + 1}/${niches.length}\) — ${totalSent}/${SESSION_TARGET} enviados`
   )
 }
 
@@ -282,9 +333,20 @@ await sendMessage(
     `📊 *Resumo da sessão*`,
     `✅ Enviados: *${totalSent}/${SESSION_TARGET}*`,
     `⏭️ Pulados/já contatados: ${totalSkipped}`,
-    `📍 Cidade: ${city}`,
-    `🏷️ Nichos: ${niches.join(', ')}`
+    `📍 Cidade: ${esc(city)}`,
+    `🏷️ Nichos: ${niches.map(esc).join(', ')}`
   ].join('\n')
 )
 
 console.log(`\n[DONE] enviados=${totalSent}/${SESSION_TARGET} pulados=${totalSkipped}`)
+
+} catch (err) {
+  console.error(`[FATAL] ${err.message}`, err)
+  try {
+    await sendMessage(
+      env.telegramBotToken, env.telegramChatId,
+      `🔴 *Erro fatal no bot:*\n\`${esc(err.message)}\`\n\nVerifique o terminal para detalhes.`
+    )
+  } catch { /* ignora erro ao enviar o aviso */ }
+  process.exit(1)
+}
