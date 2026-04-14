@@ -1,29 +1,56 @@
 # ProspecTeam
 
-Automated business prospecting via Google Places API.
+Bot de prospecção automatizada via Google Places API com envio por WhatsApp e e-mail, controlado pelo Telegram.
 
-## Prerequisites
+## Funcionalidades
+
+- Busca negócios por cidade e categoria via Google Places API
+- Envia mensagens de prospecção via WhatsApp (Evolution API) ou e-mail (Zoho SMTP)
+- Interface de controle pelo Telegram com aprovação manual por nicho
+- Deduplicação persistente para evitar contatos duplicados entre sessões
+- Modo hard: 6 nichos, aprovação por template, meta de 100 contatos
+
+## Pré-requisitos
 
 - Node.js >= 21
-- Google Cloud project with Places API (New) enabled
-- **IMPORTANT: Before any live API call, configure billing guards:**
-  1. Set a **$10 billing alert** in Google Cloud Console > Billing > Budgets & Alerts
-  2. Set a **daily quota cap** in APIs & Services > Places API (New) > Quotas
-  - Requesting `nationalPhoneNumber`, `websiteUri`, and `rating` triggers the Enterprise SKU (highest billing tier)
+- Google Cloud project com Places API (New) habilitada
+- Servidor Evolution API (para WhatsApp)
+- Conta Zoho Mail (para e-mail)
+- Bot Telegram
+
+> **Atenção:** Antes de qualquer chamada à API do Google, configure os guards de cobrança:
+> 1. Crie um **alerta de $10** em Google Cloud Console > Billing > Budgets & Alerts
+> 2. Configure um **limite diário de cotas** em APIs & Services > Places API (New) > Quotas
+>
+> Campos como `nationalPhoneNumber`, `websiteUri` e `rating` ativam o SKU Enterprise (tier de maior custo).
 
 ## Setup
 
 ```bash
 cp .env.example .env
-# Edit .env with your GOOGLE_PLACES_API_KEY
+# Preencha as variáveis no .env (veja seção abaixo)
 npm install
 ```
 
-## Usage
+## Variáveis de ambiente
+
+| Variável | Descrição |
+|----------|-----------|
+| `GOOGLE_PLACES_API_KEY` | Chave da Places API (New) |
+| `EVOLUTION_API_URL` | URL do servidor Evolution API |
+| `EVOLUTION_API_KEY` | Token da instância Evolution |
+| `ZOHO_SMTP_USER` | E-mail Zoho (ex: user@dominio.com) |
+| `ZOHO_SMTP_PASS` | App Password do Zoho Mail |
+| `EMAIL_SUBJECT` | Assunto do e-mail (suporta `{{nome}}`, `{{categoria}}`, `{{cidade}}`, `{{rating}}`) |
+| `TELEGRAM_BOT_TOKEN` | Token do bot Telegram |
+| `TELEGRAM_CHAT_ID` | Chat ID para receber notificações |
+
+## Uso
 
 ```bash
-node bin/prospect.js --city "Sao Paulo" --category "restaurante"
+# Pipeline interativo via Telegram
+node bin/prospect.js --city "São Paulo" --category "restaurante"
 
-# Debug mode (logs request headers and body to stderr)
-DEBUG=1 node bin/prospect.js --city "Sao Paulo" --category "restaurante"
+# Com debug (loga headers e body da requisição)
+DEBUG=1 node bin/prospect.js --city "São Paulo" --category "restaurante"
 ```
